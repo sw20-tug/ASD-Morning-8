@@ -54,22 +54,22 @@ public class AddNewNote{
         grid.setVgap(5);
         grid.setHgap(5);
 
-        //Defining the Name text field
+        //Defining the Title text field
 
-        final TextField name = new TextField();
-        name.setPromptText("Title:");
-        name.setPrefColumnCount(10);
-        name.getText();
-        GridPane.setConstraints(name, 0, 0);
-        grid.getChildren().add(name);
+        final TextField TitleOfTheNewNote = new TextField();
+        TitleOfTheNewNote.setPromptText("Title:");
+        TitleOfTheNewNote.setPrefColumnCount(10);
+        TitleOfTheNewNote.getText();
+        GridPane.setConstraints(TitleOfTheNewNote, 0, 0);
+        grid.getChildren().add(TitleOfTheNewNote);
 
         //Defining the Comment text field
 
-        final TextField comment = new TextField();
-        comment.setPrefColumnCount(15);
-        comment.setPromptText("Enter your note.");
-        GridPane.setConstraints(comment, 0, 2);
-        grid.getChildren().add(comment);
+        final TextField ContentOfTheNewNote = new TextField();
+        ContentOfTheNewNote.setPrefColumnCount(15);
+        ContentOfTheNewNote.setPromptText("Enter your note.");
+        GridPane.setConstraints(ContentOfTheNewNote, 0, 2);
+        grid.getChildren().add(ContentOfTheNewNote);
 
         //Defining the Submit button
 
@@ -96,9 +96,9 @@ public class AddNewNote{
 
             @Override
             public void handle(ActionEvent e) {
-                if ((comment.getText() != null && !comment.getText().isEmpty())) {
-                    label.setText(name.getText() + ": "
-                            + comment.getText());
+                if ((ContentOfTheNewNote.getText() != null && !ContentOfTheNewNote.getText().isEmpty())) {
+                    label.setText(TitleOfTheNewNote.getText() + ": "
+                            + ContentOfTheNewNote.getText());
                 }else {
                     label.setText("You have not left a comment.");
                 }
@@ -110,13 +110,13 @@ public class AddNewNote{
 
             @Override
             public void handle(ActionEvent e) {
-                name.clear();
-                comment.clear();
+                TitleOfTheNewNote.clear();
+                ContentOfTheNewNote.clear();
                 label.setText(null);
             }
         });
         VBox layout = new VBox(10);
-        layout.getChildren().addAll(welcomeMessage, grid, name, comment, submit, clear);
+        layout.getChildren().addAll(welcomeMessage, grid, TitleOfTheNewNote, ContentOfTheNewNote, submit, clear);
         layout.setAlignment(Pos.CENTER);
         Scene scene = new Scene(layout);
         NewNote.setScene(scene);
