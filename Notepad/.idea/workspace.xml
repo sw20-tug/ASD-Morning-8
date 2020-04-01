@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="311f90d1-fa53-410a-8127-4742137c3e1e" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeInsightWorkspaceSettings">
+    <option name="optimizeImportsOnTheFly" value="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1ZtFFaKXC9VMYq9pXdfU9OM3PVo" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="app.Main" />
+      <module name="editlist" />
+      <option name="VM_PARAMETERS" value="--module-path $USER_HOME$/IdeaProjects/openjfx-11.0.2_linux-x64_bin-sdk/javafx-sdk-11.0.2/lib --add-modules javafx.controls,javafx.fxml" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="311f90d1-fa53-410a-8127-4742137c3e1e" name="Default Changelist" comment="" />
+      <created>1585650380665</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1585650380665</updated>
+      <workItem from="1585650382042" duration="371000" />
+      <workItem from="1585650774642" duration="21000" />
+      <workItem from="1585654999374" duration="24563000" />
+      <workItem from="1585725833598" duration="462000" />
+      <workItem from="1585726357808" duration="3586000" />
+      <workItem from="1585730737803" duration="1285000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="559" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1585725929538">
+      <screen x="70" y="27" width="1850" height="1053" />
+    </state>
+    <state x="559" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog/70.27.1850.1053@70.27.1850.1053" timestamp="1585725929538" />
+    <state x="722" y="294" width="525" height="435" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1585650669531">
+      <screen x="70" y="27" width="1850" height="1053" />
+    </state>
+    <state x="722" y="294" width="525" height="435" key="#com.intellij.ide.util.TreeClassChooserDialog/70.27.1850.1053@70.27.1850.1053" timestamp="1585650669531" />
+    <state x="836" y="445" width="308" height="230" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog" timestamp="1585659387716">
+      <screen x="70" y="27" width="1850" height="1053" />
+    </state>
+    <state x="836" y="445" width="308" height="230" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog/70.27.1850.1053@70.27.1850.1053" timestamp="1585659387716" />
+    <state x="778" y="311" width="735" height="498" key="FileChooserDialogImpl" timestamp="1585725987060">
+      <screen x="70" y="27" width="1850" height="1053" />
+    </state>
+    <state x="778" y="311" width="735" height="498" key="FileChooserDialogImpl/70.27.1850.1053@70.27.1850.1053" timestamp="1585725987060" />
+    <state width="1804" height="130" key="GridCell.Tab.0.bottom" timestamp="1585732851228">
+      <screen x="70" y="27" width="1850" height="1053" />
+    </state>
+    <state width="1804" height="130" key="GridCell.Tab.0.bottom/70.27.1850.1053@70.27.1850.1053" timestamp="1585732851228" />
+    <state width="1804" height="130" key="GridCell.Tab.0.center" timestamp="1585732851228">
+      <screen x="70" y="27" width="1850" height="1053" />
+    </state>
+    <state width="1804" height="130" key="GridCell.Tab.0.center/70.27.1850.1053@70.27.1850.1053" timestamp="1585732851228" />
+    <state width="1804" height="130" key="GridCell.Tab.0.left" timestamp="1585732851228">
+      <screen x="70" y="27" width="1850" height="1053" />
+    </state>
+    <state width="1804" height="130" key="GridCell.Tab.0.left/70.27.1850.1053@70.27.1850.1053" timestamp="1585732851228" />
+    <state width="1804" height="130" key="GridCell.Tab.0.right" timestamp="1585732851228">
+      <screen x="70" y="27" width="1850" height="1053" />
+    </state>
+    <state width="1804" height="130" key="GridCell.Tab.0.right/70.27.1850.1053@70.27.1850.1053" timestamp="1585732851228" />
+    <state x="478" y="131" width="1024" height="852" key="SettingsEditor" timestamp="1585725993169">
+      <screen x="70" y="27" width="1850" height="1053" />
+    </state>
+    <state x="478" y="131" width="1024" height="852" key="SettingsEditor/70.27.1850.1053@70.27.1850.1053" timestamp="1585725993169" />
+    <state x="651" y="381" key="com.intellij.ide.util.TipDialog" timestamp="1585730738807">
+      <screen x="70" y="27" width="1850" height="1053" />
+    </state>
+    <state x="651" y="381" key="com.intellij.ide.util.TipDialog/70.27.1850.1053@70.27.1850.1053" timestamp="1585730738807" />
+  </component>
+</project>
