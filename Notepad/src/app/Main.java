@@ -111,17 +111,22 @@ public class Main extends Application {
         }
 
         private void importButtonClicked(Stage primaryStage) throws IOException {
+                //select the file we wanna read
                 FileChooser filechooser = new FileChooser();
+                //open the file
                 File selectedfile = filechooser.showOpenDialog(primaryStage);
 
                 try {
 
+                        //go through file
                         FileReader fr = new FileReader(selectedfile);
-                        BufferedReader br = new BufferedReader(fr);
-                        String file_content = "";
+                        BufferedReader bfr = new BufferedReader(fr);
+                        String content = "";
+                        //writes everthing to overwite.txt
                         FileWriter fw = new FileWriter("Overview.txt");
-                        while ((file_content = br.readLine()) != null) { // reads a new line
-                                fw.write(file_content);
+                        //loop through file and copy it in a string which is stored in overview.txt
+                        while ((content = bfr.readLine()) != null) { // reads a new line
+                                fw.write(content);
                                 fw.write("\n");
                                 fw.flush();
                         }
