@@ -1,9 +1,7 @@
 package app;
 
 import javafx.application.Application;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -15,17 +13,14 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
-import java.lang.*;
 
 public class Main extends Application {
 
         private ListView<String> listView;  //all nodes we added during the session
         TextArea noteInput = new TextArea();
         TextField titleInput = new TextField();
-
+        TextField tagField = new TextField();
 
         ListView<String> allNodes ; // all nodes of every session added so far...are stored in Overview.txt
 
@@ -40,7 +35,8 @@ public class Main extends Application {
                 edit.setOnAction(e -> editButtonClicked());
                 Button delete = new Button("Delete node");
                 delete.setOnAction(e -> deleteButtonClicked());
-
+                Button tag = new Button("Tag node");
+                tag.setOnAction(e -> tagButtonClicked());
 
                 //labels
                 Label welcomeLabel = new Label("Your notes");
@@ -53,7 +49,8 @@ public class Main extends Application {
                 noteInput.setMaxWidth(400);
                 noteInput.setPromptText("Your new note");
                 noteInput.setWrapText(true);
-
+                tagField.setMaxWidth(100);
+                tagField.setPromptText("Tag");
 
                 //list
                 listView = new ListView<>(FXCollections.observableArrayList());
@@ -91,56 +88,110 @@ public class Main extends Application {
                 HBox filesettings = new HBox(10);
                 filesettings.getChildren().addAll(Export, Import);
                 layout.setPadding(new Insets(10,0,10,10));
-                layout.getChildren().addAll(filesettings, welcomeLabel, allNodes, addNewLabel, titleInput, noteInput, submit, delete, edit);
+                layout.getChildren().addAll(filesettings, welcomeLabel, allNodes, addNewLabel, titleInput, noteInput,tagField, submit, delete, edit, tag);
                 Scene scene = new Scene(layout, 600, 500);
                 primaryStage.setScene(scene);
                 primaryStage.setTitle("Notepad");
                 primaryStage.show();
         }
 
+        private void tagButtonClicked() {
+                try {
+                        String overview_file = "Overview.txt";
+                        String temp = "temp.txt";
+                        String tagData = allNodes.getSelectionModel().getSelectedItem();
+                        String lineToCompare = "";
+
+                        File inputFile = new File(overview_file);
+                        File tempFile = new File(temp);
+
+                        FileWriter fw = new FileWriter(tempFile, true);
+                        BufferedWriter writer = new BufferedWriter(fw);
+                        PrintWriter pw = new PrintWriter(writer);
+                        String tagSign = "#";
+                        String gap = "   ";
+                        String tagInput = tagField.getText();
+                        tagInput = tagSign.concat(tagInput);
+                        tagInput = tagInput.concat(gap);
+
+
+                        Scanner scanner = new Scanner(new File(overview_file));
+                        scanner.useDelimiter("[\n]");
+
+                        while (scanner.hasNext()) {
+                                lineToCompare = scanner.next();
+
+                                if (tagData.compareTo(lineToCompare + "\n") == 0) {
+                                        lineToCompare = tagInput.concat(lineToCompare);
+                                        pw.println(lineToCompare);
+                                }
+                                else {
+                                        pw.println(lineToCompare);
+                                }
+                        }
+
+                        scanner.close();
+                        pw.flush();
+                        pw.close();
+
+                        if (!inputFile.delete()) {
+                                System.out.println("Could not delete the File");
+                        }
+                        if (!tempFile.renameTo(inputFile)) {
+                                System.out.println("Could not rename the File");
+
+                        }
+                }
+                catch (IOException e) {
+                        e.printStackTrace();
+                }
+                tagField.clear();
+                refreshOverview();
+
+        }
 
         private void deleteButtonClicked() {
                 try {
-                    String overview_file = "Overview.txt";
-                    String temp = "temp.txt";
-                    String deleteData = allNodes.getSelectionModel().getSelectedItem();
-                    String lineToCompare = "";
+                        String overview_file = "Overview.txt";
+                        String temp = "temp.txt";
+                        String deleteData = allNodes.getSelectionModel().getSelectedItem();
+                        String lineToCompare = "";
 
-                    File inputFile = new File(overview_file);
-                    File tempFile = new File(temp);
+                        File inputFile = new File(overview_file);
+                        File tempFile = new File(temp);
 
-                    FileWriter fw = new FileWriter(tempFile, true);
-                    BufferedWriter writer = new BufferedWriter(fw);
-                    PrintWriter pw = new PrintWriter(writer);
+                        FileWriter fw = new FileWriter(tempFile, true);
+                        BufferedWriter writer = new BufferedWriter(fw);
+                        PrintWriter pw = new PrintWriter(writer);
 
-                    Scanner scanner = new Scanner(new File(overview_file));
-                    scanner.useDelimiter("[\n]");
+                        Scanner scanner = new Scanner(new File(overview_file));
+                        scanner.useDelimiter("[\n]");
 
 
 
-                    while (scanner.hasNext())
-                    {
-                        lineToCompare = scanner.next();
-
-                        if(deleteData.compareTo(lineToCompare + "\n") != 0)
+                        while (scanner.hasNext())
                         {
+                                lineToCompare = scanner.next();
 
-                                pw.println(lineToCompare);
+                                if(deleteData.compareTo(lineToCompare + "\n") != 0)
+                                {
+
+                                        pw.println(lineToCompare);
+                                }
+
                         }
 
-                    }
+                        scanner.close();
+                        pw.flush();
+                        pw.close();
 
-                    scanner.close();
-                    pw.flush();
-                    pw.close();
-                    
-                    if (!inputFile.delete()) {
-                        System.out.println("Could not delete the File");
-                    }
-                    if (!tempFile.renameTo(inputFile)) {
-                        System.out.println("Could not rename the File");
+                        if (!inputFile.delete()) {
+                                System.out.println("Could not delete the File");
+                        }
+                        if (!tempFile.renameTo(inputFile)) {
+                                System.out.println("Could not rename the File");
 
-                    }
+                        }
                 }
 
                 catch (IOException e) {
@@ -252,6 +303,5 @@ public class Main extends Application {
                 launch(args);
         }
 }
-
 
 
