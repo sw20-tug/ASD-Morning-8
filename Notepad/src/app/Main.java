@@ -116,12 +116,12 @@ public class Main extends Application {
 
 
                         Scanner scanner = new Scanner(new File(overview_file));
-                        scanner.useDelimiter("[\n]");
+                        scanner.useDelimiter(System.getProperty("line.separator"));
 
                         while (scanner.hasNext()) {
                                 lineToCompare = scanner.next();
 
-                                if (tagData.compareTo(lineToCompare + "\n") == 0) {
+                                if (tagData.compareTo(lineToCompare + System.getProperty("line.separator")) == 0) {
                                         lineToCompare = tagInput.concat(lineToCompare);
                                         pw.println(lineToCompare);
                                 }
@@ -165,7 +165,7 @@ public class Main extends Application {
                         PrintWriter pw = new PrintWriter(writer);
 
                         Scanner scanner = new Scanner(new File(overview_file));
-                        scanner.useDelimiter("[\n]");
+                        scanner.useDelimiter(System.getProperty("line.separator"));
 
 
 
@@ -173,9 +173,8 @@ public class Main extends Application {
                         {
                                 lineToCompare = scanner.next();
 
-                                if(deleteData.compareTo(lineToCompare + "\n") != 0)
+                                if(deleteData.compareTo(lineToCompare + System.getProperty("line.separator")) != 0)
                                 {
-
                                         pw.println(lineToCompare);
                                 }
 
@@ -212,7 +211,7 @@ public class Main extends Application {
                         FileWriter fw = new FileWriter(saveFile);
                         while ((file_content = br.readLine()) != null) { // reads a new line
                                 fw.write(file_content);
-                                fw.write("\n");
+                                fw.write(System.getProperty("line.separator"));
                                 fw.flush();
                         }
 
@@ -239,7 +238,7 @@ public class Main extends Application {
                         //loop through file and copy it in a string which is stored in overview.txt
                         while ((content = bfr.readLine()) != null) { // reads a new line
                                 fw.write(content);
-                                fw.write("\n");
+                                fw.write(System.getProperty("line.separator"));
                                 fw.flush();
                         }
                         fr.close();
@@ -254,13 +253,13 @@ public class Main extends Application {
                 try {
                         FileWriter fw = new FileWriter("Overview.txt", true);
                         String s = titleInput.getText();
-                        s = s.replace("\n","");
+                        s = s.replace(System.getProperty("line.separator"),"");
                         fw.write(s);
                         fw.write("       ");
                         s = noteInput.getText();
-                        s = s.replace("\n","");
+                        s = s.replace(System.getProperty("line.separator"),"");
                         fw.write(s);
-                        fw.write("\n");
+                        fw.write(System.getProperty("line.separator"));
                         fw.close();
 
 
@@ -268,7 +267,7 @@ public class Main extends Application {
                         e.printStackTrace();
                 }
                 refreshOverview();;
-                listView.getItems().addAll(titleInput.getText() + ":\n  " + noteInput.getText());
+                listView.getItems().addAll(titleInput.getText() + ":" + System.getProperty("line.separator") + "  " + noteInput.getText());
                 titleInput.clear();
                 noteInput.clear();
         }
@@ -282,7 +281,7 @@ public class Main extends Application {
                         File temp = new File("Overview.txt");
                         Scanner scanner = new Scanner(temp);
                         while (scanner.hasNextLine()) {
-                                file_content = scanner.nextLine() + "\n";
+                                file_content = scanner.nextLine() + System.getProperty("line.separator");
                                 allNodes.getItems().addAll(file_content);
 
 
