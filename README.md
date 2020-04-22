@@ -2,7 +2,6 @@
  
 This is the repository for the team *ASD: Morning 8 - NOTE*
 
-*Requirements*
 # READ ME
 Here you can find basic information on how to start our Notepad and features it contains.
 ## Requirements
@@ -14,7 +13,7 @@ Here you can find basic information on how to start our Notepad and features it 
 - Download zip file and unzip it on a wished location
 - Open IntelliJ IDEA
 - After selecting "Open..." find and select "ASD-Morning-8..."
-If you need help setting up JavaFX project, visit https://www.jetbrains.com/help/idea/javafx.html
+- If you need help setting up JavaFX project, visit https://www.jetbrains.com/help/idea/javafx.html
 ## Features
 Currently you can:
 - See an overview of your notes
