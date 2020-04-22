@@ -1,7 +1,9 @@
 package app;
 
 import javafx.application.Application;
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -13,14 +15,20 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.lang.*;
 
 public class Main extends Application {
 
         private ListView<String> listView;  //all nodes we added during the session
         TextArea noteInput = new TextArea();
         TextField titleInput = new TextField();
+
+
         ListView<String> allNodes ; // all nodes of every session added so far...are stored in Overview.txt
+
 
         @Override
         public void start(Stage primaryStage) {
@@ -30,10 +38,13 @@ public class Main extends Application {
                 submit.setOnAction(e -> submitButtonClicked());
                 Button edit = new Button("Edit node");
                 edit.setOnAction(e -> editButtonClicked());
+                Button delete = new Button("Delete node");
+                delete.setOnAction(e -> deleteButtonClicked());
+
 
                 //labels
                 Label welcomeLabel = new Label("Your notes");
-                Label addNewLabel = new Label("Add/edit your note here.");
+                Label addNewLabel = new Label("Add/edit/tag your note here.");
 
                 //textfields
                 titleInput.setMaxWidth(100);
@@ -43,13 +54,12 @@ public class Main extends Application {
                 noteInput.setPromptText("Your new note");
                 noteInput.setWrapText(true);
 
+
                 //list
                 listView = new ListView<>(FXCollections.observableArrayList());
                 listView.setEditable(true);
                 allNodes = new ListView();
                 refreshOverview();
-
-
 
                 listView.setCellFactory(TextFieldListCell.forListView());
 
@@ -81,11 +91,62 @@ public class Main extends Application {
                 HBox filesettings = new HBox(10);
                 filesettings.getChildren().addAll(Export, Import);
                 layout.setPadding(new Insets(10,0,10,10));
-                layout.getChildren().addAll(filesettings, welcomeLabel, allNodes, addNewLabel, titleInput, noteInput, submit, edit);
+                layout.getChildren().addAll(filesettings, welcomeLabel, allNodes, addNewLabel, titleInput, noteInput, submit, delete, edit);
                 Scene scene = new Scene(layout, 600, 500);
                 primaryStage.setScene(scene);
                 primaryStage.setTitle("Notepad");
                 primaryStage.show();
+        }
+
+
+        private void deleteButtonClicked() {
+                try {
+                    String overview_file = "Overview.txt";
+                    String temp = "temp.txt";
+                    String deleteData = allNodes.getSelectionModel().getSelectedItem();
+                    String lineToCompare = "";
+
+                    File inputFile = new File(overview_file);
+                    File tempFile = new File(temp);
+
+                    FileWriter fw = new FileWriter(tempFile, true);
+                    BufferedWriter writer = new BufferedWriter(fw);
+                    PrintWriter pw = new PrintWriter(writer);
+
+                    Scanner scanner = new Scanner(new File(overview_file));
+                    scanner.useDelimiter("[\n]");
+
+
+
+                    while (scanner.hasNext())
+                    {
+                        lineToCompare = scanner.next();
+
+                        if(deleteData.compareTo(lineToCompare + "\n") != 0)
+                        {
+
+                                pw.println(lineToCompare);
+                        }
+
+                    }
+
+                    scanner.close();
+                    pw.flush();
+                    pw.close();
+                    
+                    if (!inputFile.delete()) {
+                        System.out.println("Could not delete the File");
+                    }
+                    if (!tempFile.renameTo(inputFile)) {
+                        System.out.println("Could not rename the File");
+
+                    }
+                }
+
+                catch (IOException e) {
+                        e.printStackTrace();
+                }
+                refreshOverview();
         }
 
 
@@ -137,6 +198,7 @@ public class Main extends Application {
                 refreshOverview();
         }
 
+
         private void submitButtonClicked() {
                 try {
                         FileWriter fw = new FileWriter("Overview.txt", true);
@@ -171,6 +233,9 @@ public class Main extends Application {
                         while (scanner.hasNextLine()) {
                                 file_content = scanner.nextLine() + "\n";
                                 allNodes.getItems().addAll(file_content);
+
+
+
                         }
                 }
                 catch (IOException e) {
@@ -187,4 +252,6 @@ public class Main extends Application {
                 launch(args);
         }
 }
+
+
 
