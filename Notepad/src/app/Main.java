@@ -1,72 +1,22 @@
 package app;
-
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.*;
-import java.util.Scanner;
 
 public class Main extends Application {
-
-        private ListView<String> listView;  //all nodes we added during the session
-        TextArea noteInput = new TextArea();
-        TextField titleInput = new TextField();
-        TextField tagField = new TextField();
-
-        ListView<String> allNodes ; // all nodes of every session added so far...are stored in Overview.txt
-
+        private NoteView noteView = new NoteView();
 
         @Override
         public void start(Stage primaryStage) {
-
-                //submit and delete buttons
-                Button submit = new Button("Add new note");
-                submit.setOnAction(e -> submitButtonClicked());
-                Button edit = new Button("Edit node");
-                edit.setOnAction(e -> editButtonClicked());
-                Button delete = new Button("Delete node");
-                delete.setOnAction(e -> deleteButtonClicked());
-                Button tag = new Button("Tag node");
-                tag.setOnAction(e -> tagButtonClicked());
-
-                //labels
-                Label welcomeLabel = new Label("Your notes");
                 Label addNewLabel = new Label("Add/edit/tag your note here.");
 
-                //textfields
-                titleInput.setMaxWidth(100);
-                titleInput.setPromptText("Title");
-                noteInput.setMinHeight(50);
-                noteInput.setMaxWidth(400);
-                noteInput.setPromptText("Your new note");
-                noteInput.setWrapText(true);
-                tagField.setMaxWidth(100);
-                tagField.setPromptText("Tag");
-
-                //list
-                listView = new ListView<>(FXCollections.observableArrayList());
-                listView.setEditable(true);
-                allNodes = new ListView();
-                refreshOverview();
-
-                listView.setCellFactory(TextFieldListCell.forListView());
-
-                listView.setOnEditCommit(new EventHandler<ListView.EditEvent<String>>() {
-                        @Override
-                        public void handle(ListView.EditEvent<String> t) {
-                                listView.getItems().set(t.getIndex(), t.getNewValue());
-                        }
-
-                });
 
                 //File options
                 Button Export = new Button("Export file");
@@ -82,130 +32,79 @@ public class Main extends Application {
                         }
                 });
 
+                // All code for handling the notes view is in the NoteView class
+                VBox noteViewGroup = this.noteView.createNoteView();
 
                 //layout
                 VBox layout = new VBox(12);
                 HBox filesettings = new HBox(10);
                 filesettings.getChildren().addAll(Export, Import);
-                layout.setPadding(new Insets(10,0,10,10));
-                layout.getChildren().addAll(filesettings, welcomeLabel, allNodes, addNewLabel, titleInput, noteInput,tagField, submit, delete, edit, tag);
+                layout.getChildren().addAll(noteViewGroup);
                 Scene scene = new Scene(layout, 600, 500);
                 primaryStage.setScene(scene);
                 primaryStage.setTitle("Notepad");
                 primaryStage.show();
         }
 
-        private void tagButtonClicked() {
-                try {
-                        String overview_file = "Overview.txt";
-                        String temp = "temp.txt";
-                        String tagData = allNodes.getSelectionModel().getSelectedItem();
-                        String lineToCompare = "";
 
-                        File inputFile = new File(overview_file);
-                        File tempFile = new File(temp);
-
-                        FileWriter fw = new FileWriter(tempFile, true);
-                        BufferedWriter writer = new BufferedWriter(fw);
-                        PrintWriter pw = new PrintWriter(writer);
-                        String tagSign = "#";
-                        String gap = "   ";
-                        String tagInput = tagField.getText();
-                        tagInput = tagSign.concat(tagInput);
-                        tagInput = tagInput.concat(gap);
-
-
-                        Scanner scanner = new Scanner(new File(overview_file));
-                        scanner.useDelimiter(System.getProperty("line.separator"));
-
-                        while (scanner.hasNext()) {
-                                lineToCompare = scanner.next();
-
-                                if (tagData.compareTo(lineToCompare + System.getProperty("line.separator")) == 0) {
-                                        lineToCompare = tagInput.concat(lineToCompare);
-                                        pw.println(lineToCompare);
-                                }
-                                else {
-                                        pw.println(lineToCompare);
-                                }
-                        }
-
-                        scanner.close();
-                        pw.flush();
-                        pw.close();
-
-                        if (!inputFile.delete()) {
-                                System.out.println("Could not delete the File");
-                        }
-                        if (!tempFile.renameTo(inputFile)) {
-                                System.out.println("Could not rename the File");
-
-                        }
-                }
-                catch (IOException e) {
-                        e.printStackTrace();
-                }
-                tagField.clear();
-                refreshOverview();
-
-        }
-
-        private void deleteButtonClicked() {
-                try {
-                        String overview_file = "Overview.txt";
-                        String temp = "temp.txt";
-                        String deleteData = allNodes.getSelectionModel().getSelectedItem();
-                        String lineToCompare = "";
-
-                        File inputFile = new File(overview_file);
-                        File tempFile = new File(temp);
-
-                        FileWriter fw = new FileWriter(tempFile, true);
-                        BufferedWriter writer = new BufferedWriter(fw);
-                        PrintWriter pw = new PrintWriter(writer);
-
-                        Scanner scanner = new Scanner(new File(overview_file));
-                        scanner.useDelimiter(System.getProperty("line.separator"));
-
-
-
-                        while (scanner.hasNext())
-                        {
-                                lineToCompare = scanner.next();
-
-                                if(deleteData.compareTo(lineToCompare + System.getProperty("line.separator")) != 0)
-                                {
-                                        pw.println(lineToCompare);
-                                }
-
-                        }
-
-                        scanner.close();
-                        pw.flush();
-                        pw.close();
-
-                        if (!inputFile.delete()) {
-                                System.out.println("Could not delete the File");
-                        }
-                        if (!tempFile.renameTo(inputFile)) {
-                                System.out.println("Could not rename the File");
-
-                        }
-                }
-
-                catch (IOException e) {
-                        e.printStackTrace();
-                }
-                refreshOverview();
-        }
-
+        // This is a mess but will keep it for now commented-out until I reimplement it
+//        private void tagButtonClicked() {
+//                try {
+//                        String overview_file = "Notepad/src/Overview.txt";
+//                        String temp = "temp.txt";
+//                        String tagData = listView.getSelectionModel().getSelectedItem();
+//                        String lineToCompare = "";
+//
+//                        File inputFile = new File(overview_file);
+//                        File tempFile = new File(temp);
+//
+//                        FileWriter fw = new FileWriter(tempFile, true);
+//                        BufferedWriter writer = new BufferedWriter(fw);
+//                        PrintWriter pw = new PrintWriter(writer);
+//                        String tagSign = "#";
+//                        String gap = "   ";
+//                        String tagInput = tagField.getText();
+//                        tagInput = tagSign.concat(tagInput);
+//                        tagInput = tagInput.concat(gap);
+//
+//
+//                        Scanner scanner = new Scanner(new File(overview_file));
+//                        scanner.useDelimiter(System.getProperty("line.separator"));
+//
+//                        while (scanner.hasNext()) {
+//                                lineToCompare = scanner.next();
+//
+//                                if (tagData.compareTo(lineToCompare + System.getProperty("line.separator")) == 0) {
+//                                        lineToCompare = tagInput.concat(lineToCompare);
+//                                        pw.println(lineToCompare);
+//                                } else {
+//                                        pw.println(lineToCompare);
+//                                }
+//                        }
+//
+//                        scanner.close();
+//                        pw.flush();
+//                        pw.close();
+//
+//                        if (!inputFile.delete()) {
+//                                System.out.println("Could not delete the File");
+//                        }
+//                        if (!tempFile.renameTo(inputFile)) {
+//                                System.out.println("Could not rename the File");
+//
+//                        }
+//                } catch (IOException e) {
+//                        e.printStackTrace();
+//                }
+//                tagField.clear();
+//        }
 
         private void exportButtonClicked(Stage primaryStage) {
                 FileChooser filechooser = new FileChooser();
                 File saveFile = filechooser.showSaveDialog(primaryStage);
 
                 try {
-                        FileReader fr = new FileReader("Overview.txt");
+                        FileReader fr = new FileReader("Notepad/src/Overview.txt");
                         BufferedReader br = new BufferedReader(fr);
                         String file_content = "";
                         FileWriter fw = new FileWriter(saveFile);
@@ -234,7 +133,7 @@ public class Main extends Application {
                         BufferedReader bfr = new BufferedReader(fr);
                         String content = "";
                         //writes everthing to overwite.txt
-                        FileWriter fw = new FileWriter("Overview.txt");
+                        FileWriter fw = new FileWriter("Notepad/src/Overview.txt");
                         //loop through file and copy it in a string which is stored in overview.txt
                         while ((content = bfr.readLine()) != null) { // reads a new line
                                 fw.write(content);
@@ -245,58 +144,9 @@ public class Main extends Application {
                 } catch (IOException e) {
                         e.printStackTrace();
                 }
-                refreshOverview();
+
+                // TODO: Add imported stuff to the note view
         }
-
-
-        private void submitButtonClicked() {
-                try {
-                        FileWriter fw = new FileWriter("Overview.txt", true);
-                        String s = titleInput.getText();
-                        s = s.replace(System.getProperty("line.separator"),"");
-                        fw.write(s);
-                        fw.write("       ");
-                        s = noteInput.getText();
-                        s = s.replace(System.getProperty("line.separator"),"");
-                        fw.write(s);
-                        fw.write(System.getProperty("line.separator"));
-                        fw.close();
-
-
-                } catch (IOException e) {
-                        e.printStackTrace();
-                }
-                refreshOverview();;
-                listView.getItems().addAll(titleInput.getText() + ":" + System.getProperty("line.separator") + "  " + noteInput.getText());
-                titleInput.clear();
-                noteInput.clear();
-        }
-        //here the overview gets reloaded
-
-        private void refreshOverview()
-        {
-                try {
-                        allNodes.getItems().clear();
-                        String file_content = "";
-                        File temp = new File("Overview.txt");
-                        Scanner scanner = new Scanner(temp);
-                        while (scanner.hasNextLine()) {
-                                file_content = scanner.nextLine() + System.getProperty("line.separator");
-                                allNodes.getItems().addAll(file_content);
-
-
-
-                        }
-                }
-                catch (IOException e) {
-                        e.printStackTrace();
-                }
-        }
-        private void editButtonClicked()
-        {
-
-        }
-
 
         public static void main(String[] args) {
                 launch(args);
