@@ -1,10 +1,13 @@
 package app;
 
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
@@ -147,7 +150,23 @@ public class NoteView {
 
                         Text contentText = new Text(note.content);
 
-                        VBox noteBox = new VBox(0, noteHeader, contentText, new Separator());
+                        FlowPane tagsBox = new FlowPane();
+                        tagsBox.setMaxWidth(400);
+                        tagsBox.setPadding(new Insets(10, 0, 0, 0));
+                        tagsBox.setVgap(4);
+                        tagsBox.setHgap(10);
+
+                        note.tags.forEach((tag) -> {
+                                Label label = new Label(tag);
+
+                                label.setPadding(new Insets(4, 8, 4, 8));
+                                label.setStyle("-fx-background-color: beige; -fx-background-radius: 4px;");
+
+                                tagsBox.getChildren().add(label);
+                        });
+
+
+                        VBox noteBox = new VBox(0, noteHeader, contentText, tagsBox, new Separator());
                         noteBox.setSpacing(10);
 
                         // Register button actions
@@ -190,10 +209,8 @@ public class NoteView {
          * To update note, pass new updated note and original title and content boxes.
          * This method will update contents of the text fields and write changes to the disk
          */
-        private void updateNote(Note note, Text title, Text content) {
-                title.setText(note.title);
-                content.setText(note.content);
-
+        private void updateNote() {
+                this.drawNotes();
                 this.writeNotesToDisk();
         }
 
@@ -207,6 +224,14 @@ public class NoteView {
                 // Text field for editing note content; set current note content as content of the field
                 TextArea contentField = new TextArea();
 
+                // Handling tags
+                FlowPane tagBox = new FlowPane();
+                tagBox.setVgap(10);
+                tagBox.setHgap(10);
+
+                createTagField(tagBox, null, null);
+
+
                 // Create save button and register action for it
                 Button saveButton = new Button("Add");
                 saveButton.setOnAction((e) -> {
@@ -216,6 +241,23 @@ public class NoteView {
                                 titleField.getText(),
                                 contentField.getText()
                         );
+
+                        List<String> newTags = new ArrayList<String>();
+
+                        FilteredList<Node> nodeFilteredList = tagBox.getChildren()
+                                .filtered((node) -> node instanceof TextField)
+                                .filtered((tag) -> !((TextField) tag).getText().isBlank());
+
+                        for (Node tag : nodeFilteredList) {
+                                if (checkIfTagHasIllegalCharacters((TextField) tag)) {
+                                        return;
+                                }
+
+                                String tagText = ((TextField) tag).getText();
+                                newTags.add(tagText);
+                        }
+
+                        note.tags = newTags;
 
                         this.notes.add(note);
 
@@ -235,7 +277,7 @@ public class NoteView {
                 HBox buttons = new HBox(saveButton, cancelButton);
                 buttons.setAlignment(Pos.BOTTOM_RIGHT);
 
-                VBox layout = new VBox(titleField, contentField, buttons);
+                VBox layout = new VBox(titleField, contentField, tagBox, buttons);
                 stage.setTitle("Add note");
                 stage.setScene(new Scene(layout, 450, 450));
 
@@ -265,15 +307,35 @@ public class NoteView {
                 TextArea contentField = new TextArea();
                 contentField.setText(note.content);
 
+                // Handling tags
+                FlowPane tagBox = new FlowPane();
+                tagBox.setVgap(10);
+                tagBox.setHgap(10);
+                createTagField(tagBox, note, null);
+
                 // Create save button and register action for it
                 Button saveButton = new Button("Save");
                 saveButton.setOnAction((e) -> {
-                        // Update Note object with new values and pass it to method for handling saving with
-                        // original boxes
+                        List<String> newTags = new ArrayList<String>();
+
+                        FilteredList<Node> nodeFilteredList = tagBox.getChildren()
+                                .filtered((node) -> node instanceof TextField)
+                                .filtered((tag) -> !((TextField) tag).getText().isBlank());
+
+                        for (Node tag : nodeFilteredList) {
+                                if (checkIfTagHasIllegalCharacters((TextField) tag)) {
+                                        return;
+                                }
+
+                                String tagText = ((TextField) tag).getText();
+                                newTags.add(tagText);
+                        }
+
+                        note.tags = newTags;
                         note.title = titleField.getText();
                         note.content = contentField.getText();
 
-                        this.updateNote(note, title, content);
+                        this.updateNote();
 
                         stage.close();
                 });
@@ -287,11 +349,55 @@ public class NoteView {
                 HBox buttons = new HBox(saveButton, cancelButton);
                 buttons.setAlignment(Pos.BOTTOM_RIGHT);
 
-                VBox layout = new VBox(titleField, contentField, buttons);
+                VBox layout = new VBox(titleField, contentField, tagBox, buttons);
                 stage.setTitle("Edit note");
                 stage.setScene(new Scene(layout, 450, 450));
 
                 stage.show();
+        }
+
+        private void createTagField(FlowPane tagBox, Note note, String existingTag) {
+                if (note != null) {
+                        note.tags.forEach((tag) -> createTagField(tagBox, null, tag));
+                }
+
+                TextField tagTextField = new TextField();
+                tagTextField.setMaxWidth(80);
+
+                if (existingTag != null) {
+                        tagTextField.setText(existingTag);
+                }
+
+                tagTextField.setOnAction((e) -> {
+                        checkIfTagHasIllegalCharacters(tagTextField);
+
+                        if (existingTag == null && !tagTextField.getText().isBlank()) {
+                                createTagField(tagBox, null, null);
+                                tagTextField.setOnAction((event) -> {
+                                });
+                        }
+                });
+
+                tagBox.getChildren().add(tagTextField);
+                tagTextField.requestFocus();
+        }
+
+        private boolean checkIfTagHasIllegalCharacters(TextField tagTextField) {
+                if (
+                        tagTextField.getText().contains(System.getProperty("line.separator")) ||
+                                tagTextField.getText().contains("#")
+                ) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Invalid Tag");
+                        alert.setHeaderText("Illegal characters used in Tag");
+                        alert.setContentText("You shouldn't use reserved characters in tags");
+
+                        alert.showAndWait();
+
+                        return true;
+                }
+
+                return false;
         }
 
         /**
@@ -313,7 +419,7 @@ public class NoteView {
 
                         // Read each line and create a Note object for it
                         while (scanner.hasNextLine()) {
-                                file_content = scanner.nextLine() ;
+                                file_content = scanner.nextLine();
 
                                 Note note = Note.fromRawText(file_content);
 
@@ -322,7 +428,7 @@ public class NoteView {
 
                 } catch (IOException e) {
                         e.printStackTrace();
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                         Logger.getAnonymousLogger().warning(e.getMessage());
                 }
 
