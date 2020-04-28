@@ -1,4 +1,5 @@
 package app;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -21,7 +22,6 @@ public class Main extends Application {
                 //File options
                 Button Export = new Button("Export file");
                 Export.setOnAction(e -> exportButtonClicked(primaryStage));
-
                 Button Import = new Button("Import file");
 
                 Import.setOnAction(e -> {
@@ -33,7 +33,7 @@ public class Main extends Application {
                 });
 
                 // All code for handling the notes view is in the NoteView class
-                VBox noteViewGroup = this.noteView.createNoteView();
+                VBox noteViewGroup = this.noteView.createNoteView(primaryStage);
 
                 //layout
                 VBox layout = new VBox(12);
@@ -127,7 +127,6 @@ public class Main extends Application {
                 File selectedfile = filechooser.showOpenDialog(primaryStage);
 
                 try {
-
                         //go through file
                         FileReader fr = new FileReader(selectedfile);
                         BufferedReader bfr = new BufferedReader(fr);
