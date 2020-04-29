@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  * This class takes care of rendering note related code
  */
 public class NoteView {
-        List<Note> notes;
+        List <Note> notes;
 
         private VBox allNotesBox = new VBox(20);
         private Stage primaryStage;
@@ -41,6 +41,10 @@ public class NoteView {
          */
         public NoteView() {
                 this.notes = this.readNotesFromDisk();
+        }
+
+        public List<Note> getNotes() {
+                return notes;
         }
 
         public VBox createNoteView(Stage primaryStage) {
@@ -242,7 +246,7 @@ public class NoteView {
                                 contentField.getText()
                         );
 
-                        List<String> newTags = new ArrayList<String>();
+                        List<String> newTags = new ArrayList<>();
 
                         FilteredList<Node> nodeFilteredList = tagBox.getChildren()
                                 .filtered((node) -> node instanceof TextField)
@@ -316,7 +320,7 @@ public class NoteView {
                 // Create save button and register action for it
                 Button saveButton = new Button("Save");
                 saveButton.setOnAction((e) -> {
-                        List<String> newTags = new ArrayList<String>();
+                        List<String> newTags = new ArrayList<>();
 
                         FilteredList<Node> nodeFilteredList = tagBox.getChildren()
                                 .filtered((node) -> node instanceof TextField)
@@ -458,7 +462,7 @@ public class NoteView {
                 }
         }
 
-        private void exportFile(Note note, File file) {
+       public void exportFile(Note note, File file) {
                 try {
                         PrintWriter writer;
                         writer = new PrintWriter(file);
