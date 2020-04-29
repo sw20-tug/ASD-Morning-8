@@ -13,7 +13,7 @@ import java.io.*;
 
 public class Main extends Application {
         private NoteView noteView = new NoteView();
-
+        private Controller controller = new Controller();
         @Override
         public void start(Stage primaryStage) {
                 Label addNewLabel = new Label("Add/edit/tag your note here.");
@@ -103,21 +103,22 @@ public class Main extends Application {
                 FileChooser filechooser = new FileChooser();
                 File saveFile = filechooser.showSaveDialog(primaryStage);
 
-                try {
-                        FileReader fr = new FileReader("Notepad/src/Overview.txt");
-                        BufferedReader br = new BufferedReader(fr);
-                        String file_content = "";
-                        FileWriter fw = new FileWriter(saveFile);
-                        while ((file_content = br.readLine()) != null) { // reads a new line
-                                fw.write(file_content);
-                                fw.write(System.getProperty("line.separator"));
-                                fw.flush();
-                        }
-
-                        fw.close();
-                } catch (IOException e) {
-                        e.printStackTrace();
-                }
+             //   try {
+             //           FileReader fr = new FileReader("Notepad/src/Overview.txt");
+               //         BufferedReader br = new BufferedReader(fr);
+                 //       String file_content = "";
+              //          FileWriter fw = new FileWriter(saveFile);
+              //          while ((file_content = br.readLine()) != null) { // reads a new line
+              //                  fw.write(file_content);
+              //                  fw.write(System.getProperty("line.separator"));
+              //                  fw.flush();
+              //          }
+//
+ //                       fw.close();
+ //               } catch (IOException e) {○
+//                        e.printStackTrace();
+//                }
+                controller.exportDataToFile(saveFile);
         }
 
         private void importButtonClicked(Stage primaryStage) throws IOException {
@@ -126,25 +127,24 @@ public class Main extends Application {
                 //open the file
                 File selectedfile = filechooser.showOpenDialog(primaryStage);
 
-                try {
-                        //go through file
-                        FileReader fr = new FileReader(selectedfile);
-                        BufferedReader bfr = new BufferedReader(fr);
-                        String content = "";
-                        //writes everthing to overwite.txt
-                        FileWriter fw = new FileWriter("Notepad/src/Overview.txt");
-                        //loop through file and copy it in a string which is stored in overview.txt
-                        while ((content = bfr.readLine()) != null) { // reads a new line
-                                fw.write(content);
-                                fw.write(System.getProperty("line.separator"));
-                                fw.flush();
-                        }
-                        fr.close();
-                } catch (IOException e) {
-                        e.printStackTrace();
-                }
-
-                // TODO: Add imported stuff to the note view
+//                try {
+//                        //go through file
+//                        FileReader fr = new FileReader(selectedfile);
+//                        BufferedReader bfr = new BufferedReader(fr);
+//                        String content = "";
+//                        //writes everthing to overwite.txt
+//                        FileWriter fw = new FileWriter("Notepad/src/Overview.txt");//                       //loop through file and copy it in a string which is stored in overview.txt
+ //                       while ((content = bfr.readLine()) != null) { // reads a new line
+//                                fw.write(content);
+//                                fw.write(System.getProperty("line.separator"));
+//                                fw.flush();
+  //                      }
+//                        fr.close();
+ //               } catch (IOException e) {
+ //                       e.printStackTrace();
+  //              }
+                controller.importDataFromFile(selectedfile);
+              // TODO: Add imported stuff to the note view
         }
 
         public static void main(String[] args) {

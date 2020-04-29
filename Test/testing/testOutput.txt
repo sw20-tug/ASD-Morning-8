@@ -4,4 +4,4 @@ Edit	Yes	yes
 To do list	Go to shopping mall
 Make cake	Vanilla	Vanilla
 Make cake.txt	Vanilla{{NEWLINE}}
-Try	Cooking	cook
+dada.txt	dada{{NEWLINE}}
