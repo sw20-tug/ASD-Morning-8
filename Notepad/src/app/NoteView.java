@@ -23,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -36,12 +37,15 @@ public class NoteView {
 
         private VBox allNotesBox = new VBox();
         private Stage primaryStage;
+        private LocalDate filteredDate;
+        private String filteredTag;
 
         /**
          * Read notes from the disk on instantiation of the class
          */
         public NoteView() {
-                this.notes = this.readNotesFromDisk();
+                List<Note> loadedNotes = this.readNotesFromDisk();
+                this.notes = loadedNotes;
         }
 
         public List<Note> getNotes() {
@@ -77,10 +81,32 @@ public class NoteView {
 
                 Button importButton = new Button("Import");
                 importButton.setOnAction((e) -> this.importNote());
-                importButton.setPadding(new Insets(0, 6, 4, 6));
                 importButton.setId("button");
 
-                HBox firstRow = new HBox(20, welcomeLabel, addNewNoteButton, importButton);
+                DatePicker dateFilter = new DatePicker();
+                dateFilter.setPromptText("Filter by date");
+                dateFilter.setOnAction((e) -> {
+                        this.filteredDate = dateFilter.getValue();
+
+                        this.drawNotes();
+                });
+
+                TextField tagFilter = new TextField();
+                tagFilter.setPromptText("Filter by tag");
+                tagFilter.setOnAction((e) -> {
+                        if (tagFilter.getText().isBlank()) {
+                                this.filteredTag = null;
+
+                                this.drawNotes();
+                        } else {
+                                this.filteredTag = tagFilter.getText();
+
+                                this.drawNotes();
+                        }
+                });
+
+
+                HBox firstRow = new HBox(20, welcomeLabel, addNewNoteButton, importButton, dateFilter, tagFilter);
                 firstRow.setStyle("-fx-background-color: #9792BC");
                 firstRow.setAlignment(Pos.CENTER_LEFT);
                 firstRow.setPadding(new Insets(15, 30, 15, 20));
@@ -135,6 +161,14 @@ public class NoteView {
 
                 //  Iterate over each note in note list and create elements
                 this.notes.forEach((Note note) -> {
+                        if (this.filteredDate != null && !this.filteredDate.isEqual(note.createdAt)) {
+                                return;
+                        }
+
+                        if (this.filteredTag != null && !note.tags.contains(this.filteredTag)) {
+                                return;
+                        }
+
                         Text titleText = new Text(note.title);
                         titleText.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
