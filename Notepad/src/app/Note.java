@@ -1,5 +1,6 @@
 package app;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +13,7 @@ public class Note {
         public String title;
         public String content;
         public List<String> tags = new ArrayList<String>();
+        public LocalDate createdAt;
 
         // Chosen delimiter; should be used in main text file in order to seperate title and content as separate values
         private static final String delimiter = "\t";
@@ -33,6 +35,8 @@ public class Note {
         ) {
                 this.title = title;
                 this.content = content;
+
+                this.createdAt = LocalDate.now();
         }
 
         public static Note fromRawText(String rawText) throws RuntimeException {
@@ -43,25 +47,28 @@ public class Note {
                 // Split given line from txt file with the delimiter into title and content
                 String[] splitText = rawText.split(Note.delimiter);
 
-                if (splitText.length != 2 && splitText.length != 3) {
+                if (splitText.length != 3 && splitText.length != 4) {
                         Logger.getAnonymousLogger().warning("Could not parse note content, maybe spaces were used instead of tabs");
 
                         return new Note(rawText.replace(Note.newLineSubstitute, System.getProperty("line.separator")), "");
                 }
 
+
                 // Title should be first element
-                String title = splitText[0];
+                String title = splitText[1];
                 // Content is the second element after removing the delimiter
                 // Line seperator is also removed from the final string as it is unnecessary
-                String content = splitText[1].replace(Note.newLineSubstitute, System.getProperty("line.separator"));
+                String content = splitText[2].replace(Note.newLineSubstitute, System.getProperty("line.separator"));
 
                 Note note =  new Note(title, content);
 
                 // handle tags
-                if (splitText.length == 3) {
-                        String[] tags = splitText[2].split(Note.tagDelimiter);
+                if (splitText.length == 4) {
+                        String[] tags = splitText[3].split(Note.tagDelimiter);
                         note.tags = new ArrayList<String>(Arrays.asList(tags));
                 }
+
+                note.createdAt = LocalDate.parse(splitText[0]);
 
                 return note;
         }
@@ -77,7 +84,7 @@ public class Note {
                         Note.newLineSubstitute
                 );
 
-                String serializedString = this.title + Note.delimiter + escapedContent;
+                String serializedString = this.createdAt + Note.delimiter + this.title + Note.delimiter + escapedContent;
 
                 if (!this.tags.isEmpty()) {
                         String escapedTags = String.join(Note.tagDelimiter, this.tags);
