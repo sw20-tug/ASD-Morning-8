@@ -41,6 +41,7 @@ public class Main extends Application {
                 filesettings.getChildren().addAll(Export, Import);
                 layout.getChildren().addAll(noteViewGroup);
                 Scene scene = new Scene(layout, 600, 500);
+                scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
                 primaryStage.setScene(scene);
                 primaryStage.setTitle("Notepad");
                 primaryStage.show();
