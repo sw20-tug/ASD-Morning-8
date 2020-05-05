@@ -1,0 +1,23 @@
+#button {
+    -fx-border-radius: 3px;
+    -fx-padding: 12px 30px;
+    -fx-font-weight: 400;
+    -fx-font-size: 12px;
+    -fx-background-color: #313b4c;
+    -fx-text-fill: F9F9F9;
+}
+
+#add-button {
+    -fx-border-radius: 3px;
+    -fx-padding: 10px 20px;
+    -fx-font-weight: 400;
+    -fx-font-size: 16px;
+    -fx-background-color: #63a670;
+    -fx-text-fill: F9F9F9;
+}
+
+#note-box {
+    -fx-background-color: #f9f9f9;
+    -fx-text-fill: #41536F;
+    -fx-padding: 20px 30px;
+}
