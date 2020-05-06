@@ -40,7 +40,8 @@ public class Main extends Application {
                 HBox filesettings = new HBox(10);
                 filesettings.getChildren().addAll(Export, Import);
                 layout.getChildren().addAll(noteViewGroup);
-                Scene scene = new Scene(layout, 600, 500);
+                Scene scene = new Scene(layout, 800, 640);
+                scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
                 primaryStage.setScene(scene);
                 primaryStage.setTitle("Notepad");
                 primaryStage.show();

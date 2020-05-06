@@ -10,6 +10,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -22,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -33,14 +35,17 @@ import java.util.logging.Logger;
 public class NoteView {
         List <Note> notes;
 
-        private VBox allNotesBox = new VBox(20);
+        private VBox allNotesBox = new VBox();
         private Stage primaryStage;
+        private LocalDate filteredDate;
+        private String filteredTag;
 
         /**
          * Read notes from the disk on instantiation of the class
          */
         public NoteView() {
-                this.notes = this.readNotesFromDisk();
+                List<Note> loadedNotes = this.readNotesFromDisk();
+                this.notes = loadedNotes;
         }
 
         public List<Note> getNotes() {
@@ -50,7 +55,7 @@ public class NoteView {
         public VBox createNoteView(Stage primaryStage) {
                 this.primaryStage = primaryStage;
                 // Header should be moved to its own class or Main
-                VBox header = this.createHeader();
+                HBox header = this.createHeader();
 
                 // Draw box in which all notes are rendered
                 this.drawNotes();
@@ -63,19 +68,48 @@ public class NoteView {
                 return new VBox(header, scrollPane);
         }
 
-        private VBox createHeader() {
+        private HBox createHeader() {
                 Label welcomeLabel = new Label("Your notes");
-                welcomeLabel.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+                welcomeLabel.setFont(Font.font("Arial", FontWeight.LIGHT, 20));
+                welcomeLabel.setTextFill(Paint.valueOf("#F9F9F9"));
 
                 Button addNewNoteButton = new Button("+");
                 addNewNoteButton.setOnAction((e) -> this.showAddNewNoteWindow());
                 addNewNoteButton.setPadding(new Insets(0, 6, 4, 6));
+                addNewNoteButton.setId("add-button");
+                addNewNoteButton.setAlignment(Pos.CENTER_RIGHT);
 
                 Button importButton = new Button("Import");
                 importButton.setOnAction((e) -> this.importNote());
-                importButton.setPadding(new Insets(0, 6, 4, 6));
+                importButton.setId("button");
 
-                HBox firstRow = new HBox(20, welcomeLabel, addNewNoteButton, importButton);
+                DatePicker dateFilter = new DatePicker();
+                dateFilter.setPromptText("Filter by date");
+                dateFilter.setOnAction((e) -> {
+                        this.filteredDate = dateFilter.getValue();
+
+                        this.drawNotes();
+                });
+
+                TextField tagFilter = new TextField();
+                tagFilter.setPromptText("Filter by tag");
+                tagFilter.setOnAction((e) -> {
+                        if (tagFilter.getText().isBlank()) {
+                                this.filteredTag = null;
+
+                                this.drawNotes();
+                        } else {
+                                this.filteredTag = tagFilter.getText();
+
+                                this.drawNotes();
+                        }
+                });
+
+
+                HBox firstRow = new HBox(20, welcomeLabel, addNewNoteButton, importButton, dateFilter, tagFilter);
+                firstRow.setStyle("-fx-background-color: #9792BC");
+                firstRow.setAlignment(Pos.CENTER_LEFT);
+                firstRow.setPadding(new Insets(15, 30, 15, 20));
 
                 // Underline under Your notes text
                 Line line = new Line();
@@ -84,10 +118,8 @@ public class NoteView {
                 line.setEndX(200.0f); // Change this value to make line longer/shorter
                 line.setEndY(0.0f);
 
-                VBox header = new VBox(firstRow, line);
-                header.setPadding(new Insets(30, 15, 0, 10));
 
-                return header;
+                return firstRow;
         }
 
         private void importNote() {
@@ -126,12 +158,17 @@ public class NoteView {
         private void drawNotes() {
                 this.allNotesBox.getChildren().clear();
                 // Container box in which each note will be rendered
-                this.allNotesBox.setPadding(new Insets(10, 20, 20, 10));
-                this.allNotesBox.setStyle("-fx-background-color: #E4E8F0");
-
 
                 //  Iterate over each note in note list and create elements
                 this.notes.forEach((Note note) -> {
+                        if (this.filteredDate != null && !this.filteredDate.isEqual(note.createdAt)) {
+                                return;
+                        }
+
+                        if (this.filteredTag != null && !note.tags.contains(this.filteredTag)) {
+                                return;
+                        }
+
                         Text titleText = new Text(note.title);
                         titleText.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
@@ -170,7 +207,7 @@ public class NoteView {
                         });
 
 
-                        VBox noteBox = new VBox(0, noteHeader, contentText, tagsBox, new Separator());
+                        VBox noteBox = new VBox(0, noteHeader, contentText, tagsBox);
                         noteBox.setSpacing(10);
 
                         // Register button actions
@@ -192,8 +229,10 @@ public class NoteView {
                                 }
                         });
 
+                        noteBox.setId("note-box");
+
                         // add created note to the allNotesBox
-                        this.allNotesBox.getChildren().addAll(noteBox);
+                        this.allNotesBox.getChildren().addAll(noteBox, new Separator());
                 });
         }
 
