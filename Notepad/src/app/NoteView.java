@@ -169,16 +169,25 @@ public class NoteView {
                                 return;
                         }
 
+                        if(note.is_pinned && note.title.charAt(0) != '*')
+                        {
+                               note.title = "*" + note.title + "*";
+                        }
+
                         Text titleText = new Text(note.title);
                         titleText.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
+
+
+
                         // Create drop down with options
+                        MenuItem pinNoteButton = new MenuItem("Pin");
                         MenuItem editButton = new MenuItem("Edit");
                         MenuItem deleteButton = new MenuItem("Delete");
                         MenuItem exportButton = new MenuItem("Export");
                         MenuButton menuButton = new MenuButton(
                                 "...",
-                                null,
+                                null, pinNoteButton,
                                 editButton, deleteButton, exportButton
                         );
 
@@ -211,6 +220,7 @@ public class NoteView {
                         noteBox.setSpacing(10);
 
                         // Register button actions
+                        pinNoteButton.setOnAction((e) -> this.pinNoteToTop(note));
                         editButton.setOnAction((e) -> this.showEditWindow(note, titleText, contentText));
                         deleteButton.setOnAction((e) -> this.deleteNote(note, noteBox));
                         exportButton.setOnAction((e) -> {
@@ -234,6 +244,13 @@ public class NoteView {
                         // add created note to the allNotesBox
                         this.allNotesBox.getChildren().addAll(noteBox, new Separator());
                 });
+        }
+
+        private void pinNoteToTop(Note note) {
+                note.is_pinned = true;
+                this.notes.remove(note);
+                this.notes.add(0,note);
+                this.updateNote();
         }
 
         /**
@@ -512,3 +529,4 @@ public class NoteView {
                 }
         }
 }
+
