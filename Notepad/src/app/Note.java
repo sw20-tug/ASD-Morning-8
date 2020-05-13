@@ -13,7 +13,6 @@ public class Note {
         public String title;
         public String content;
         public List<String> tags = new ArrayList<String>();
-        public boolean is_pinned;
         public LocalDate createdAt;
 
         // Chosen delimiter; should be used in main text file in order to seperate title and content as separate values

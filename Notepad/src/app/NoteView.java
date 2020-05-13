@@ -169,11 +169,6 @@ public class NoteView {
                                 return;
                         }
 
-                        if(note.is_pinned && note.title.charAt(0) != '*')
-                        {
-                               note.title = "*" + note.title + "*";
-                        }
-
                         Text titleText = new Text(note.title);
                         titleText.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
@@ -181,7 +176,15 @@ public class NoteView {
 
 
                         // Create drop down with options
-                        MenuItem pinNoteButton = new MenuItem("Pin");
+                        MenuItem pinNoteButton;
+                        if(note.title.charAt(0) == '*')
+                        {
+                           pinNoteButton = new MenuItem("Unpin");
+                        }
+                        else
+                        {
+                           pinNoteButton = new MenuItem("Pin");
+                        }
                         MenuItem editButton = new MenuItem("Edit");
                         MenuItem deleteButton = new MenuItem("Delete");
                         MenuItem exportButton = new MenuItem("Export");
@@ -247,9 +250,18 @@ public class NoteView {
         }
 
         private void pinNoteToTop(Note note) {
-                note.is_pinned = true;
-                this.notes.remove(note);
-                this.notes.add(0,note);
+                if(note.title.charAt(0) == '*')
+                {
+                    note.title = note.title.substring(1,note.title.length() - 1);
+                    this.notes.remove(note);
+                    this.notes.add(this.notes.size(),note);
+                }
+                else
+                {
+                    note.title = "*" + note.title + "*";
+                    this.notes.remove(note);
+                    this.notes.add(0,note);
+                }
                 this.updateNote();
         }
 
@@ -529,4 +541,3 @@ public class NoteView {
                 }
         }
 }
-
