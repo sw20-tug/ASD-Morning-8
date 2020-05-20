@@ -33,6 +33,9 @@ import java.util.logging.Logger;
  * This class takes care of rendering note related code
  */
 public class NoteView {
+        Integer SORT_BY_DATE = 0;
+        Integer SORT_BY_TITLE = 1;
+
         List <Note> notes;
 
         private VBox allNotesBox = new VBox();
@@ -105,8 +108,18 @@ public class NoteView {
                         }
                 });
 
+                MenuItem sortByTitle = new MenuItem("by title...");
+                MenuItem sortByDate = new MenuItem("by date...");
+                MenuButton sortButton = new MenuButton(
+                        "Sort",
+                        null,
+                        sortByTitle, sortByDate
+                );
 
-                HBox firstRow = new HBox(20, welcomeLabel, addNewNoteButton, importButton, dateFilter, tagFilter);
+                sortByTitle.setOnAction((e) -> this.sortNotes(this.SORT_BY_TITLE));
+                sortByDate.setOnAction((e) -> this.sortNotes(this.SORT_BY_DATE));
+
+                HBox firstRow = new HBox(20, welcomeLabel, addNewNoteButton, importButton, dateFilter, tagFilter, sortButton);
                 firstRow.setStyle("-fx-background-color: #9792BC");
                 firstRow.setAlignment(Pos.CENTER_LEFT);
                 firstRow.setPadding(new Insets(15, 30, 15, 20));
@@ -171,8 +184,6 @@ public class NoteView {
 
                         Text titleText = new Text(note.title);
                         titleText.setFont(Font.font("Arial", FontWeight.BOLD, 16));
-
-
 
 
                         // Create drop down with options
@@ -263,6 +274,19 @@ public class NoteView {
                     this.notes.add(0,note);
                 }
                 this.updateNote();
+        }
+
+        private void sortNotes(Integer sortOption) {
+                if (sortOption == SORT_BY_TITLE) {
+                        this.notes.sort(Note.getTitleComperator());
+
+                        this.drawNotes();
+                } else if (sortOption == SORT_BY_DATE
+                ) {
+                        this.notes = this.readNotesFromDisk();
+                        this.drawNotes();
+                }
+
         }
 
         /**

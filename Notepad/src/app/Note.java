@@ -3,6 +3,7 @@ package app;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -60,7 +61,7 @@ public class Note {
                 // Line seperator is also removed from the final string as it is unnecessary
                 String content = splitText[2].replace(Note.newLineSubstitute, System.getProperty("line.separator"));
 
-                Note note =  new Note(title, content);
+                Note note = new Note(title, content);
 
                 // handle tags
                 if (splitText.length == 4) {
@@ -71,6 +72,16 @@ public class Note {
                 note.createdAt = LocalDate.parse(splitText[0]);
 
                 return note;
+        }
+
+        public static Comparator<Note> getTitleComperator() {
+                return (Note a, Note b) -> {
+                        if (a.isPinned()) {
+                                return 0;
+                        }
+
+                        return a.title.compareToIgnoreCase(b.title);
+                };
         }
 
         /**
@@ -93,5 +104,9 @@ public class Note {
                 }
 
                 return serializedString + System.getProperty("line.separator");
+        }
+
+        public Boolean isPinned() {
+                return this.title.charAt(0) == '*';
         }
 }
