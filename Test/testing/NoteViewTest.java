@@ -22,6 +22,7 @@ public class NoteViewTest {
     final String TEST_TITLE = "title";
     final String TEST_CONTENT = "content";
 
+
     private Controller c = new Controller();
 
     @Test
@@ -82,6 +83,16 @@ public class NoteViewTest {
 }
    }
     @Test
+    void sortNotes(){
+        NoteView nv= new NoteView();
+        List<Note> noteList= nv.getNotes();
+
+        assertEquals(nv.sortNoteList(noteList, nv.SORT_BY_TITLE), nv.SORT_BY_TITLE);
+        assertNull(nv.sortNoteList(noteList, nv.SORT_BY_UNKNOWN), "Unknown sort type");
+
+    }
+
+    @Test
     void pinNote() {
         NoteView nv= new NoteView();
 
@@ -96,6 +107,7 @@ public class NoteViewTest {
             }
         }
     }
+
 
     @Test
     void shareNote() {
