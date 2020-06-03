@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -37,6 +38,7 @@ public class NoteView {
         Integer SORT_BY_TITLE = 1;
 
         List <Note> notes;
+        List <Note> completedNotes;
 
         private VBox allNotesBox = new VBox();
         private Stage primaryStage;
@@ -82,6 +84,12 @@ public class NoteView {
                 addNewNoteButton.setId("add-button");
                 addNewNoteButton.setAlignment(Pos.CENTER_RIGHT);
 
+                Button overviewButton = new Button("Overview");
+                overviewButton.setOnAction((e) -> drawNotes());
+
+                Button completedButton = new Button("Completed Notes");
+                completedButton.setOnAction((e) -> this.drawCompletedNotes());
+
                 Button importButton = new Button("Import");
                 importButton.setOnAction((e) -> this.importNote());
                 importButton.setId("button");
@@ -108,8 +116,8 @@ public class NoteView {
                         }
                 });
 
-                MenuItem sortByTitle = new MenuItem("by title...");
-                MenuItem sortByDate = new MenuItem("by date...");
+                MenuItem sortByTitle = new MenuItem("...by title");
+                MenuItem sortByDate = new MenuItem("...by date");
                 MenuButton sortButton = new MenuButton(
                         "Sort",
                         null,
@@ -119,7 +127,7 @@ public class NoteView {
                 sortByTitle.setOnAction((e) -> this.sortNotes(this.SORT_BY_TITLE));
                 sortByDate.setOnAction((e) -> this.sortNotes(this.SORT_BY_DATE));
 
-                HBox firstRow = new HBox(20, welcomeLabel, addNewNoteButton, importButton, dateFilter, tagFilter, sortButton);
+                HBox firstRow = new HBox(20, welcomeLabel, addNewNoteButton, importButton, overviewButton, completedButton, dateFilter, tagFilter, sortButton);
                 firstRow.setStyle("-fx-background-color: #9792BC");
                 firstRow.setAlignment(Pos.CENTER_LEFT);
                 firstRow.setPadding(new Insets(15, 30, 15, 20));
@@ -133,6 +141,152 @@ public class NoteView {
 
 
                 return firstRow;
+        }
+
+        private void drawCompletedNotes() {
+                this.completedNotes = readCompletedNotesFromDisk();
+                this.allNotesBox.getChildren().clear();
+                // Container box in which each note will be rendered
+
+                //  Iterate over each note in note list and create elements
+                this.completedNotes.forEach((Note note) -> {
+                        note.markAsCompleted = true;
+                        if (this.filteredDate != null && !this.filteredDate.isEqual(note.createdAt)) {
+                                return;
+                        }
+
+                        if (this.filteredTag != null && !note.tags.contains(this.filteredTag)) {
+                                return;
+                        }
+
+                        Text titleText = new Text(note.title);
+                        titleText.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+                        Text completedNoteText;
+                        if(note.markAsCompleted == true)
+                        {
+                                String date = note.completedAt.toString();
+
+                                completedNoteText = new Text("done " + date);
+                        }
+                        else
+                        {
+                                completedNoteText = new Text("");
+                        }
+
+
+                        // Create drop down with options
+                        MenuItem pinNoteButton;
+                        if(note.title.charAt(0) == '*')
+                        {
+                                pinNoteButton = new MenuItem("Unpin");
+                        }
+                        else
+                        {
+                                pinNoteButton = new MenuItem("Pin");
+                        }
+                        MenuItem editButton = new MenuItem("Edit");
+                        MenuItem deleteButton = new MenuItem("Delete");
+                        MenuItem exportButton = new MenuItem("Export");
+                        MenuItem completedButton = new MenuItem("Complete");
+                        MenuItem shareButton = new MenuItem("Share");
+                        MenuButton menuButton = new MenuButton(
+                                "...",
+                                null, pinNoteButton,
+                                editButton, deleteButton, exportButton, completedButton, shareButton
+                        );
+
+                        // Anchor pane is used to make title appear on the left side and drop down on the right
+                        AnchorPane doneHeader = new AnchorPane(completedNoteText);
+                        AnchorPane.setTopAnchor(completedNoteText, 0.0);
+                        AnchorPane.setLeftAnchor(completedNoteText, 0.0);
+
+                        AnchorPane noteHeader = new AnchorPane(titleText, menuButton);
+                        AnchorPane.setTopAnchor(titleText, 0.0);
+                        AnchorPane.setLeftAnchor(titleText, 0.0);
+
+                        AnchorPane.setTopAnchor(menuButton, 0.0);
+                        AnchorPane.setRightAnchor(menuButton, 0.0);
+
+                        Text contentText = new Text(note.content);
+
+                        FlowPane tagsBox = new FlowPane();
+                        tagsBox.setMaxWidth(400);
+                        tagsBox.setPadding(new Insets(10, 0, 0, 0));
+                        tagsBox.setVgap(4);
+                        tagsBox.setHgap(10);
+
+                        note.tags.forEach((tag) -> {
+                                Label label = new Label(tag);
+
+                                label.setPadding(new Insets(4, 8, 4, 8));
+                                label.setStyle("-fx-background-color: beige; -fx-background-radius: 4px;");
+
+                                tagsBox.getChildren().add(label);
+                        });
+
+
+                        VBox noteBox = new VBox(0, doneHeader, noteHeader, contentText, tagsBox);
+                        noteBox.setSpacing(10);
+
+                        // Register button actions
+                        completedButton.setOnAction((e) -> this.completeNote(note));
+                        pinNoteButton.setOnAction((e) -> this.pinNoteToTop(note));
+                        editButton.setOnAction((e) -> this.showEditWindow(note, titleText, contentText));
+                        deleteButton.setOnAction((e) -> this.deleteNote(note, noteBox));
+                        exportButton.setOnAction((e) -> {
+                                FileChooser fileChooser = new FileChooser();
+
+                                //Set extension filter for text files
+                                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+                                fileChooser.getExtensionFilters().add(extFilter);
+                                fileChooser.setInitialFileName(note.title + ".txt");
+
+                                //Show save file dialog
+                                File file = fileChooser.showSaveDialog(this.primaryStage);
+
+                                if (file != null) {
+                                        this.exportFile(note, file);
+                                }
+                        });
+                        shareButton.setOnAction((e) -> this.share(note));
+
+                        noteBox.setId("note-box");
+
+                        // add created note to the allNotesBox
+                        this.allNotesBox.getChildren().addAll(noteBox, new Separator());
+                });
+
+        }
+        private List<Note> readCompletedNotesFromDisk() {
+                List<Note> notes = new ArrayList<Note>();
+
+                try {
+                        // Maybe unncessary variable?
+                        String file_content = "";
+
+                        // Get Overview.txt from the disk
+
+                        File temp = new File("Notepad/src/CompletedNotes.txt");
+                        Scanner scanner = new Scanner(temp);
+                        scanner.useDelimiter(System.getProperty("line.separator"));
+
+                        // Read each line and create a Note object for it
+                        while (scanner.hasNextLine()) {
+                                file_content = scanner.nextLine();
+
+                                Note note = Note.fromRawText(file_content);
+
+                                notes.add(note);
+                        }
+
+                } catch (IOException e) {
+                        e.printStackTrace();
+                } catch (RuntimeException e) {
+                        Logger.getAnonymousLogger().warning(e.getMessage());
+                }
+
+                return notes;
         }
 
         private void importNote() {
@@ -182,33 +336,52 @@ public class NoteView {
                                 return;
                         }
 
+                        updateCompletedStatus();
+
                         Text titleText = new Text(note.title);
                         titleText.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+                        Text completedNoteText;
+                        if(note.markAsCompleted == true)
+                        {
+                                completedNoteText = new Text("done");
+                        }
+                        else
+                        {
+                                completedNoteText = new Text("");
+                        }
 
 
                         // Create drop down with options
                         MenuItem pinNoteButton;
                         if(note.title.charAt(0) == '*')
                         {
-                           pinNoteButton = new MenuItem("Unpin");
+                                pinNoteButton = new MenuItem("Unpin");
                         }
                         else
                         {
-                           pinNoteButton = new MenuItem("Pin");
+                                pinNoteButton = new MenuItem("Pin");
                         }
                         MenuItem editButton = new MenuItem("Edit");
                         MenuItem deleteButton = new MenuItem("Delete");
                         MenuItem exportButton = new MenuItem("Export");
+                        MenuItem completedButton = new MenuItem("Complete");
+                        MenuItem shareButton = new MenuItem("Share");
                         MenuButton menuButton = new MenuButton(
                                 "...",
                                 null, pinNoteButton,
-                                editButton, deleteButton, exportButton
+                                editButton, deleteButton, exportButton, completedButton, shareButton
                         );
 
                         // Anchor pane is used to make title appear on the left side and drop down on the right
+                        AnchorPane doneHeader = new AnchorPane(completedNoteText);
+                        AnchorPane.setTopAnchor(completedNoteText, 0.0);
+                        AnchorPane.setLeftAnchor(completedNoteText, 0.0);
+
                         AnchorPane noteHeader = new AnchorPane(titleText, menuButton);
                         AnchorPane.setTopAnchor(titleText, 0.0);
                         AnchorPane.setLeftAnchor(titleText, 0.0);
+
                         AnchorPane.setTopAnchor(menuButton, 0.0);
                         AnchorPane.setRightAnchor(menuButton, 0.0);
 
@@ -230,10 +403,11 @@ public class NoteView {
                         });
 
 
-                        VBox noteBox = new VBox(0, noteHeader, contentText, tagsBox);
+                        VBox noteBox = new VBox(0, doneHeader, noteHeader, contentText, tagsBox);
                         noteBox.setSpacing(10);
 
                         // Register button actions
+                        completedButton.setOnAction((e) -> this.completeNote(note));
                         pinNoteButton.setOnAction((e) -> this.pinNoteToTop(note));
                         editButton.setOnAction((e) -> this.showEditWindow(note, titleText, contentText));
                         deleteButton.setOnAction((e) -> this.deleteNote(note, noteBox));
@@ -252,6 +426,7 @@ public class NoteView {
                                         this.exportFile(note, file);
                                 }
                         });
+                        shareButton.setOnAction((e) -> this.share(note));
 
                         noteBox.setId("note-box");
 
@@ -260,18 +435,109 @@ public class NoteView {
                 });
         }
 
+        private void share(Note note) {
+                TextInputDialog dialog = new TextInputDialog();
+
+                dialog.setTitle("Share");
+                dialog.setHeaderText("Enter email address to which note should be shared.");
+
+                Optional<String> result = dialog.showAndWait();
+                String entered = null;
+
+                if (result.isPresent()) {
+                        entered = result.get();
+                }
+
+                if (entered == null) {
+                        return;
+                }
+
+                NoteShare noteShare = NoteShare.getInstance();
+                noteShare.shareByEmail(entered, note);
+        }
+
+        private void updateCompletedStatus() {
+                try {
+                        // Maybe unncessary variable?
+                        String file_content = "";
+
+                        // Get Overview.txt from the disk
+
+                        File temp = new File("Notepad/src/CompletedNotes.txt");
+                        Scanner scanner = new Scanner(temp);
+                        scanner.useDelimiter(System.getProperty("line.separator"));
+
+
+                        while (scanner.hasNextLine()) {
+                                String line_content = scanner.nextLine();
+
+                                for (Note note : this.notes) {
+                                        if(line_content.contains(note.title))
+                                        {
+                                                note.markAsCompleted = true;
+                                        }
+                                }
+
+                        }
+
+                } catch (IOException e) {
+                        e.printStackTrace();
+                } catch (RuntimeException e) {
+                        Logger.getAnonymousLogger().warning(e.getMessage());
+                }
+
+        }
+
+        private void completeNote(Note note)
+        {
+                for(int i = 0; i < this.notes.size(); i++)
+                {
+                        if(this.notes.get(i) == note)
+                        {
+                                this.notes.get(i).markAsCompleted = true;
+                                this.notes.get(i).completedAt = LocalDate.now();
+
+                        }
+                }
+                updateNote();
+                writeCompletedNoteToDisk();
+
+        }
+        private void writeCompletedNoteToDisk()
+        {
+
+                String file_content = "";
+
+                for (Note note : this.notes) {
+                        if(note.markAsCompleted == true)
+                        {
+                                file_content = file_content + note.serialize();
+                        }
+                }
+
+                try {
+                        File temp = new File("Notepad/src/CompletedNotes.txt");
+                        FileWriter writer = new FileWriter(temp, false);
+                        writer.write(file_content);
+                        writer.close();
+                } catch (IOException e) {
+                        e.printStackTrace();
+                }
+        }
+
+
         private void pinNoteToTop(Note note) {
                 if(note.title.charAt(0) == '*')
                 {
-                    note.title = note.title.substring(1,note.title.length() - 1);
-                    this.notes.remove(note);
-                    this.notes.add(this.notes.size(),note);
+                        note.title = note.title.substring(1,note.title.length() - 1);
+                        this.notes.remove(note);
+                        this.notes.add(this.notes.size(),note);
                 }
                 else
                 {
-                    note.title = "*" + note.title + "*";
-                    this.notes.remove(note);
-                    this.notes.add(0,note);
+                        note.title = "*" + note.title + "*";
+                        this.notes.remove(note);
+                        this.notes.add(0,note);
                 }
                 this.updateNote();
         }
@@ -509,6 +775,7 @@ public class NoteView {
                         String file_content = "";
 
                         // Get Overview.txt from the disk
+
                         File temp = new File("Notepad/src/Overview.txt");
                         Scanner scanner = new Scanner(temp);
                         scanner.useDelimiter(System.getProperty("line.separator"));
@@ -554,7 +821,7 @@ public class NoteView {
                 }
         }
 
-       public void exportFile(Note note, File file) {
+        public void exportFile(Note note, File file) {
                 try {
                         PrintWriter writer;
                         writer = new PrintWriter(file);
@@ -565,3 +832,5 @@ public class NoteView {
                 }
         }
 }
+
+
