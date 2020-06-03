@@ -6,6 +6,9 @@ import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
 public class NoteShare {
+        public final int STAUTS_SUCESS= 200;
+        public final int MISSING_DATA=403;
+        public final int STAUTS_FAILED = 500;
 
         private static NoteShare instance;
 
@@ -48,7 +51,11 @@ public class NoteShare {
                 return NoteShare.instance;
         }
 
-        public void shareByEmail(String toAddress, Note note) {
+        public int shareByEmail(String toAddress, Note note) {
+
+                if (toAddress.isEmpty() || note ==null){
+                        return MISSING_DATA;
+                }
 
                 try {
                         MimeMessage message = new MimeMessage(this.session);
@@ -60,9 +67,11 @@ public class NoteShare {
                         // Send message
                         Transport.send(message);
                         System.out.println("message sent successfully....");
+                        return STAUTS_SUCESS;
 
                 } catch (MessagingException mex) {
                         mex.printStackTrace();
                 }
+                return STAUTS_FAILED;
         }
 }

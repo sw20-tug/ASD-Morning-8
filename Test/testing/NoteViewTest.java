@@ -12,8 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NoteViewTest {
     static final String FILE_INPUT="/Test/testing/testInput.txt";
@@ -81,5 +80,20 @@ public class NoteViewTest {
               }
 }
    }
+    @Test
+    void pinNote() {
+        NoteView nv= new NoteView();
+
+        List<Note> noteList= nv.getNotes();
+        for (Note n : noteList) {
+            if (n.title.contains("Test")) {
+                System.out.println("Starting tests.....");
+                nv.pinNoteToTopTest(n);
+                assertTrue(n.isPinned());
+                nv.pinNoteToTopTest(n);
+                assertFalse(n.isPinned());
+            }
+        }
+    }
 
 }

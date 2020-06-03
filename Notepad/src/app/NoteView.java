@@ -34,8 +34,9 @@ import java.util.logging.Logger;
  * This class takes care of rendering note related code
  */
 public class NoteView {
-        Integer SORT_BY_DATE = 0;
-        Integer SORT_BY_TITLE = 1;
+        public Integer SORT_BY_DATE = 1;
+        public Integer SORT_BY_TITLE = 2;
+        public Integer SORT_BY_UNKNOWN = 3;
 
         List <Note> notes;
         List <Note> completedNotes;
@@ -526,7 +527,17 @@ public class NoteView {
         }
 
 
-        private void pinNoteToTop(Note note) {
+        public void pinNoteToTopTest(Note note) {
+                if(note.title.charAt(0) == '*') {
+                        note.title = note.title.substring(1,note.title.length() - 1);
+                }
+                else {
+                        note.title = "*" + note.title + "*";
+                }
+        }
+
+        public void pinNoteToTop(Note note) {
+
                 if(note.title.charAt(0) == '*')
                 {
                         note.title = note.title.substring(1,note.title.length() - 1);
@@ -542,16 +553,34 @@ public class NoteView {
                 this.updateNote();
         }
 
-        private void sortNotes(Integer sortOption) {
+        public void sortNotes(Integer sortOption) {
+
                 if (sortOption == SORT_BY_TITLE) {
                         this.notes.sort(Note.getTitleComperator());
-
                         this.drawNotes();
+
                 } else if (sortOption == SORT_BY_DATE
                 ) {
                         this.notes = this.readNotesFromDisk();
                         this.drawNotes();
                 }
+
+        }
+
+        public Integer sortNoteList(List<Note> list, Integer sortOption) {
+                int sort = 0;
+
+                if (!sortOption.equals(SORT_BY_DATE) && !sortOption.equals(SORT_BY_TITLE)) {
+                        return null;
+                }
+
+                if (sortOption == SORT_BY_TITLE) {
+                        list.sort(Note.getTitleComperator());
+                        sort = SORT_BY_TITLE;
+                } else if (sortOption == SORT_BY_DATE) {
+                        sort = SORT_BY_DATE;
+                }
+                return sort;
 
         }
 
