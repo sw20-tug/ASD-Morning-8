@@ -14,6 +14,8 @@ public class Note {
         public String title;
         public String content;
         public List<String> tags = new ArrayList<String>();
+        public boolean markAsCompleted = false;
+        public LocalDate completedAt;
         public LocalDate createdAt;
 
         // Chosen delimiter; should be used in main text file in order to seperate title and content as separate values
@@ -48,7 +50,7 @@ public class Note {
                 // Split given line from txt file with the delimiter into title and content
                 String[] splitText = rawText.split(Note.delimiter);
 
-                if (splitText.length != 3 && splitText.length != 4) {
+                if (splitText.length != 3 && splitText.length != 4 && splitText.length != 5) {
                         Logger.getAnonymousLogger().warning("Could not parse note content, maybe spaces were used instead of tabs");
 
                         return new Note(rawText.replace(Note.newLineSubstitute, System.getProperty("line.separator")), "");
@@ -63,9 +65,21 @@ public class Note {
 
                 Note note = new Note(title, content);
 
+
                 // handle tags
-                if (splitText.length == 4) {
+                if (splitText.length == 4 && note.markAsCompleted == false) {
                         String[] tags = splitText[3].split(Note.tagDelimiter);
+                        note.tags = new ArrayList<String>(Arrays.asList(tags));
+                }
+                if (splitText.length == 4 && note.markAsCompleted == true) {
+
+
+                        note.completedAt = LocalDate.parse(splitText[3]);
+                }
+                if (splitText.length == 5) {
+
+                        note.completedAt = LocalDate.parse(splitText[3]);
+                        String[] tags = splitText[4].split(Note.tagDelimiter);
                         note.tags = new ArrayList<String>(Arrays.asList(tags));
                 }
 
@@ -94,8 +108,13 @@ public class Note {
                         System.getProperty("line.separator"),
                         Note.newLineSubstitute
                 );
+                String serializedString = new String("");
 
-                String serializedString = this.createdAt + Note.delimiter + this.title + Note.delimiter + escapedContent;
+                if(this.markAsCompleted == true) {
+                        serializedString = this.createdAt + Note.delimiter + this.title + Note.delimiter + escapedContent + Note.delimiter + this.completedAt.toString();
+                } else {
+                        serializedString = this.createdAt + Note.delimiter + this.title + Note.delimiter + escapedContent;
+                }
 
                 if (!this.tags.isEmpty()) {
                         String escapedTags = String.join(Note.tagDelimiter, this.tags);
@@ -110,3 +129,5 @@ public class Note {
                 return this.title.charAt(0) == '*';
         }
 }
+
+

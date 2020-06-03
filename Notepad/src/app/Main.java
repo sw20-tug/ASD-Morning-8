@@ -22,7 +22,7 @@ public class Main extends Application {
                 VBox layout = new VBox(12);
                 HBox filesettings = new HBox(10);
                 layout.getChildren().addAll(noteViewGroup);
-                Scene scene = new Scene(layout, 800, 640);
+                Scene scene = new Scene(layout, 1000, 640);
                 scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
                 primaryStage.setScene(scene);
                 primaryStage.setTitle("Notepad");
