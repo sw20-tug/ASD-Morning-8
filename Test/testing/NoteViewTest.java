@@ -2,6 +2,7 @@ package testing;
 
 import app.Controller;
 import app.Note;
+import app.NoteShare;
 import app.NoteView;
 import org.junit.jupiter.api.Test;
 
@@ -96,4 +97,21 @@ public class NoteViewTest {
         }
     }
 
+    @Test
+    void shareNote() {
+        NoteView nv= new NoteView();
+        NoteShare share = NoteShare.getInstance();
+
+        List<Note> noteList= nv.getNotes();
+        for (Note n : noteList) {
+            if (n.title.contains("Test")) {
+                System.out.println("Starting tests..");
+                assertEquals(share.shareByEmail("tereza.bencic@gmail.com", null), share.MISSING_DATA);
+                assertEquals(share.shareByEmail("", n), share.MISSING_DATA);
+                assertEquals(share.shareByEmail("tereza.bencic@gmail.com", n), share.STAUTS_SUCESS);
+
+            }
+        }
+
+    }
 }
