@@ -29,6 +29,6 @@
     <orderEntry type="library" name="jar_files" level="project" />
     <orderEntry type="library" name="lib1" level="project" />
     <orderEntry type="library" name="mail" level="project" />
-    <orderEntry type="library" name="activation (1)" level="project" />
+    <orderEntry type="library" name="activation" level="project" />
   </component>
 </module>
