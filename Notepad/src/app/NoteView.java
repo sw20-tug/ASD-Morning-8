@@ -38,13 +38,14 @@ public class NoteView {
         public Integer SORT_BY_TITLE = 2;
         public Integer SORT_BY_UNKNOWN = 3;
 
-        List <Note> notes;
-        List <Note> completedNotes;
+        List<Note> notes;
+        List<Note> completedNotes;
 
         private VBox allNotesBox = new VBox();
         private Stage primaryStage;
         private LocalDate filteredDate;
         private String filteredTag;
+        private TranslationService translationService = TranslationService.getInstance();
 
         /**
          * Read notes from the disk on instantiation of the class
@@ -75,7 +76,7 @@ public class NoteView {
         }
 
         private HBox createHeader() {
-                Label welcomeLabel = new Label("Your notes");
+                Label welcomeLabel = new Label(translationService.get(TranslationKeys.TITLE));
                 welcomeLabel.setFont(Font.font("Arial", FontWeight.LIGHT, 20));
                 welcomeLabel.setTextFill(Paint.valueOf("#F9F9F9"));
 
@@ -85,18 +86,18 @@ public class NoteView {
                 addNewNoteButton.setId("add-button");
                 addNewNoteButton.setAlignment(Pos.CENTER_RIGHT);
 
-                Button overviewButton = new Button("Overview");
+                Button overviewButton = new Button(translationService.get(TranslationKeys.OVERVIEW));
                 overviewButton.setOnAction((e) -> drawNotes());
 
-                Button completedButton = new Button("Completed Notes");
+                Button completedButton = new Button(translationService.get(TranslationKeys.COMPLETED));
                 completedButton.setOnAction((e) -> this.drawCompletedNotes());
 
-                Button importButton = new Button("Import");
+                Button importButton = new Button(translationService.get(TranslationKeys.IMPORT));
                 importButton.setOnAction((e) -> this.importNote());
                 importButton.setId("button");
 
                 DatePicker dateFilter = new DatePicker();
-                dateFilter.setPromptText("Filter by date");
+                dateFilter.setPromptText(translationService.get(TranslationKeys.FILTERBYDATE));
                 dateFilter.setOnAction((e) -> {
                         this.filteredDate = dateFilter.getValue();
 
@@ -104,7 +105,7 @@ public class NoteView {
                 });
 
                 TextField tagFilter = new TextField();
-                tagFilter.setPromptText("Filter by tag");
+                tagFilter.setPromptText(translationService.get(TranslationKeys.FILTERBYTAG));
                 tagFilter.setOnAction((e) -> {
                         if (tagFilter.getText().isBlank()) {
                                 this.filteredTag = null;
@@ -117,10 +118,14 @@ public class NoteView {
                         }
                 });
 
-                MenuItem sortByTitle = new MenuItem("...by title");
-                MenuItem sortByDate = new MenuItem("...by date");
+                MenuItem sortByTitle = new MenuItem(
+                        translationService.get(TranslationKeys.SORTBYTITLE)
+                );
+                MenuItem sortByDate = new MenuItem(
+                        translationService.get(TranslationKeys.SORTBYDATE)
+                );
                 MenuButton sortButton = new MenuButton(
-                        "Sort",
+                        translationService.get(TranslationKeys.SORT),
                         null,
                         sortByTitle, sortByDate
                 );
@@ -144,6 +149,10 @@ public class NoteView {
                 return firstRow;
         }
 
+        private void switchLanguage(String language) {
+                this.translationService.setLanguage(language);
+        }
+
         private void drawCompletedNotes() {
                 this.completedNotes = readCompletedNotesFromDisk();
                 this.allNotesBox.getChildren().clear();
@@ -164,33 +173,27 @@ public class NoteView {
                         titleText.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
                         Text completedNoteText;
-                        if(note.markAsCompleted == true)
-                        {
+                        if (note.markAsCompleted == true) {
                                 String date = note.completedAt.toString();
 
-                                completedNoteText = new Text("done " + date);
-                        }
-                        else
-                        {
+                                completedNoteText = new Text(translationService.get(TranslationKeys.DATE) + " " + date);
+                        } else {
                                 completedNoteText = new Text("");
                         }
 
 
                         // Create drop down with options
                         MenuItem pinNoteButton;
-                        if(note.title.charAt(0) == '*')
-                        {
-                                pinNoteButton = new MenuItem("Unpin");
+                        if (note.title.charAt(0) == '*') {
+                                pinNoteButton = new MenuItem(translationService.get(TranslationKeys.UNPIN));
+                        } else {
+                                pinNoteButton = new MenuItem(translationService.get(TranslationKeys.PIN));
                         }
-                        else
-                        {
-                                pinNoteButton = new MenuItem("Pin");
-                        }
-                        MenuItem editButton = new MenuItem("Edit");
-                        MenuItem deleteButton = new MenuItem("Delete");
-                        MenuItem exportButton = new MenuItem("Export");
-                        MenuItem completedButton = new MenuItem("Complete");
-                        MenuItem shareButton = new MenuItem("Share");
+                        MenuItem editButton = new MenuItem(translationService.get(TranslationKeys.EDIT));
+                        MenuItem deleteButton = new MenuItem(translationService.get(TranslationKeys.DELETE));
+                        MenuItem exportButton = new MenuItem(translationService.get(TranslationKeys.EXPORT));
+                        MenuItem completedButton = new MenuItem(translationService.get(TranslationKeys.COMPLETE));
+                        MenuItem shareButton = new MenuItem(translationService.get(TranslationKeys.SHARE));
                         MenuButton menuButton = new MenuButton(
                                 "...",
                                 null, pinNoteButton,
@@ -259,6 +262,7 @@ public class NoteView {
                 });
 
         }
+
         private List<Note> readCompletedNotesFromDisk() {
                 List<Note> notes = new ArrayList<Note>();
 
@@ -343,31 +347,25 @@ public class NoteView {
                         titleText.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
                         Text completedNoteText;
-                        if(note.markAsCompleted == true)
-                        {
-                                completedNoteText = new Text("done");
-                        }
-                        else
-                        {
+                        if (note.markAsCompleted == true) {
+                                completedNoteText = new Text(translationService.get(TranslationKeys.DONE));
+                        } else {
                                 completedNoteText = new Text("");
                         }
 
 
                         // Create drop down with options
                         MenuItem pinNoteButton;
-                        if(note.title.charAt(0) == '*')
-                        {
-                                pinNoteButton = new MenuItem("Unpin");
+                        if (note.title.charAt(0) == '*') {
+                                pinNoteButton = new MenuItem(translationService.get(TranslationKeys.UNPIN));
+                        } else {
+                                pinNoteButton = new MenuItem(translationService.get(TranslationKeys.PIN));
                         }
-                        else
-                        {
-                                pinNoteButton = new MenuItem("Pin");
-                        }
-                        MenuItem editButton = new MenuItem("Edit");
-                        MenuItem deleteButton = new MenuItem("Delete");
-                        MenuItem exportButton = new MenuItem("Export");
-                        MenuItem completedButton = new MenuItem("Complete");
-                        MenuItem shareButton = new MenuItem("Share");
+                        MenuItem editButton = new MenuItem(translationService.get(TranslationKeys.EDIT));
+                        MenuItem deleteButton = new MenuItem(translationService.get(TranslationKeys.DELETE));
+                        MenuItem exportButton = new MenuItem(translationService.get(TranslationKeys.EXPORT));
+                        MenuItem completedButton = new MenuItem(translationService.get(TranslationKeys.COMPLETE));
+                        MenuItem shareButton = new MenuItem(translationService.get(TranslationKeys.SHARE));
                         MenuButton menuButton = new MenuButton(
                                 "...",
                                 null, pinNoteButton,
@@ -439,8 +437,8 @@ public class NoteView {
         private void share(Note note) {
                 TextInputDialog dialog = new TextInputDialog();
 
-                dialog.setTitle("Share");
-                dialog.setHeaderText("Enter email address to which note should be shared.");
+                dialog.setTitle(translationService.get(TranslationKeys.SHARE));
+                dialog.setHeaderText(translationService.get(TranslationKeys.EMAILPROMPT));
 
                 Optional<String> result = dialog.showAndWait();
                 String entered = null;
@@ -473,8 +471,7 @@ public class NoteView {
                                 String line_content = scanner.nextLine();
 
                                 for (Note note : this.notes) {
-                                        if(line_content.contains(note.title))
-                                        {
+                                        if (line_content.contains(note.title)) {
                                                 note.markAsCompleted = true;
                                         }
                                 }
@@ -489,12 +486,9 @@ public class NoteView {
 
         }
 
-        private void completeNote(Note note)
-        {
-                for(int i = 0; i < this.notes.size(); i++)
-                {
-                        if(this.notes.get(i) == note)
-                        {
+        private void completeNote(Note note) {
+                for (int i = 0; i < this.notes.size(); i++) {
+                        if (this.notes.get(i) == note) {
                                 this.notes.get(i).markAsCompleted = true;
                                 this.notes.get(i).completedAt = LocalDate.now();
 
@@ -504,14 +498,13 @@ public class NoteView {
                 writeCompletedNoteToDisk();
 
         }
-        private void writeCompletedNoteToDisk()
-        {
+
+        private void writeCompletedNoteToDisk() {
 
                 String file_content = "";
 
                 for (Note note : this.notes) {
-                        if(note.markAsCompleted == true)
-                        {
+                        if (note.markAsCompleted == true) {
                                 file_content = file_content + note.serialize();
                         }
                 }
@@ -538,17 +531,14 @@ public class NoteView {
 
         public void pinNoteToTop(Note note) {
 
-                if(note.title.charAt(0) == '*')
-                {
-                        note.title = note.title.substring(1,note.title.length() - 1);
+                if (note.title.charAt(0) == '*') {
+                        note.title = note.title.substring(1, note.title.length() - 1);
                         this.notes.remove(note);
-                        this.notes.add(this.notes.size(),note);
-                }
-                else
-                {
+                        this.notes.add(this.notes.size(), note);
+                } else {
                         note.title = "*" + note.title + "*";
                         this.notes.remove(note);
-                        this.notes.add(0,note);
+                        this.notes.add(0, note);
                 }
                 this.updateNote();
         }
@@ -660,7 +650,7 @@ public class NoteView {
                 });
 
                 // Create cancel button and register action which will just close the window without making changes
-                Button cancelButton = new Button("Cancel");
+                Button cancelButton = new Button(translationService.get(TranslationKeys.CANCEL));
                 cancelButton.setOnAction((e) -> {
                         stage.close();
                 });
@@ -669,7 +659,7 @@ public class NoteView {
                 buttons.setAlignment(Pos.BOTTOM_RIGHT);
 
                 VBox layout = new VBox(titleField, contentField, tagBox, buttons);
-                stage.setTitle("Add note");
+                stage.setTitle(translationService.get(TranslationKeys.ADDNOTE));
                 stage.setScene(new Scene(layout, 450, 450));
 
                 stage.show();
@@ -732,7 +722,7 @@ public class NoteView {
                 });
 
                 // Create cancel button and register action which will just close the window without making changes
-                Button cancelButton = new Button("Cancel");
+                Button cancelButton = new Button(translationService.get(TranslationKeys.CANCEL));
                 cancelButton.setOnAction((e) -> {
                         stage.close();
                 });
@@ -741,7 +731,7 @@ public class NoteView {
                 buttons.setAlignment(Pos.BOTTOM_RIGHT);
 
                 VBox layout = new VBox(titleField, contentField, tagBox, buttons);
-                stage.setTitle("Edit note");
+                stage.setTitle(translationService.get(TranslationKeys.EDITNOTE));
                 stage.setScene(new Scene(layout, 450, 450));
 
                 stage.show();
@@ -861,5 +851,3 @@ public class NoteView {
                 }
         }
 }
-
-
