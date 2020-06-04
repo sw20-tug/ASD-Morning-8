@@ -1,7 +1,9 @@
 package app;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -12,6 +14,9 @@ public class Note {
         public String title;
         public String content;
         public List<String> tags = new ArrayList<String>();
+        public boolean markAsCompleted = false;
+        public LocalDate completedAt;
+        public LocalDate createdAt;
 
         // Chosen delimiter; should be used in main text file in order to seperate title and content as separate values
         private static final String delimiter = "\t";
@@ -33,6 +38,8 @@ public class Note {
         ) {
                 this.title = title;
                 this.content = content;
+
+                this.createdAt = LocalDate.now();
         }
 
         public static Note fromRawText(String rawText) throws RuntimeException {
@@ -43,27 +50,52 @@ public class Note {
                 // Split given line from txt file with the delimiter into title and content
                 String[] splitText = rawText.split(Note.delimiter);
 
-                if (splitText.length != 2 && splitText.length != 3) {
+                if (splitText.length != 3 && splitText.length != 4 && splitText.length != 5) {
                         Logger.getAnonymousLogger().warning("Could not parse note content, maybe spaces were used instead of tabs");
 
                         return new Note(rawText.replace(Note.newLineSubstitute, System.getProperty("line.separator")), "");
                 }
 
+
                 // Title should be first element
-                String title = splitText[0];
+                String title = splitText[1];
                 // Content is the second element after removing the delimiter
                 // Line seperator is also removed from the final string as it is unnecessary
-                String content = splitText[1].replace(Note.newLineSubstitute, System.getProperty("line.separator"));
+                String content = splitText[2].replace(Note.newLineSubstitute, System.getProperty("line.separator"));
 
-                Note note =  new Note(title, content);
+                Note note = new Note(title, content);
+
 
                 // handle tags
-                if (splitText.length == 3) {
-                        String[] tags = splitText[2].split(Note.tagDelimiter);
+                if (splitText.length == 4 && note.markAsCompleted == false) {
+                        String[] tags = splitText[3].split(Note.tagDelimiter);
+                        note.tags = new ArrayList<String>(Arrays.asList(tags));
+                }
+                if (splitText.length == 4 && note.markAsCompleted == true) {
+
+
+                        note.completedAt = LocalDate.parse(splitText[3]);
+                }
+                if (splitText.length == 5) {
+
+                        note.completedAt = LocalDate.parse(splitText[3]);
+                        String[] tags = splitText[4].split(Note.tagDelimiter);
                         note.tags = new ArrayList<String>(Arrays.asList(tags));
                 }
 
+                note.createdAt = LocalDate.parse(splitText[0]);
+
                 return note;
+        }
+
+        public static Comparator<Note> getTitleComperator() {
+                return (Note a, Note b) -> {
+                        if (a.isPinned()) {
+                                return 0;
+                        }
+
+                        return a.title.compareToIgnoreCase(b.title);
+                };
         }
 
         /**
@@ -76,8 +108,13 @@ public class Note {
                         System.getProperty("line.separator"),
                         Note.newLineSubstitute
                 );
+                String serializedString = new String("");
 
-                String serializedString = this.title + Note.delimiter + escapedContent;
+                if(this.markAsCompleted == true) {
+                        serializedString = this.createdAt + Note.delimiter + this.title + Note.delimiter + escapedContent + Note.delimiter + this.completedAt.toString();
+                } else {
+                        serializedString = this.createdAt + Note.delimiter + this.title + Note.delimiter + escapedContent;
+                }
 
                 if (!this.tags.isEmpty()) {
                         String escapedTags = String.join(Note.tagDelimiter, this.tags);
@@ -87,4 +124,10 @@ public class Note {
 
                 return serializedString + System.getProperty("line.separator");
         }
+
+        public Boolean isPinned() {
+                return this.title.charAt(0) == '*';
+        }
 }
+
+

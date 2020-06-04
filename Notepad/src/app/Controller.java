@@ -25,7 +25,7 @@ public class Controller {
         try {
             FileReader fr = new FileReader(DISK_FILE_PATH);
             BufferedReader br = new BufferedReader(fr);
-           String file_content = "";
+            String file_content = "";
             FileWriter fw = new FileWriter(saveFile);
             while ((file_content = br.readLine()) != null) { // reads a new line
                 fw.write(file_content);
@@ -181,4 +181,4 @@ public class Controller {
         return note;
     }
 
-    }
+}

@@ -2,6 +2,7 @@ package testing;
 
 import app.Controller;
 import app.Note;
+import app.NoteShare;
 import app.NoteView;
 import org.junit.jupiter.api.Test;
 
@@ -12,8 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NoteViewTest {
     static final String FILE_INPUT="/Test/testing/testInput.txt";
@@ -21,6 +21,7 @@ public class NoteViewTest {
 
     final String TEST_TITLE = "title";
     final String TEST_CONTENT = "content";
+
 
     private Controller c = new Controller();
 
@@ -81,5 +82,48 @@ public class NoteViewTest {
               }
 }
    }
+    @Test
+    void sortNotes(){
+        NoteView nv= new NoteView();
+        List<Note> noteList= nv.getNotes();
 
+        assertEquals(nv.sortNoteList(noteList, nv.SORT_BY_TITLE), nv.SORT_BY_TITLE);
+        assertNull(nv.sortNoteList(noteList, nv.SORT_BY_UNKNOWN), "Unknown sort type");
+
+    }
+
+    @Test
+    void pinNote() {
+        NoteView nv= new NoteView();
+
+        List<Note> noteList= nv.getNotes();
+        for (Note n : noteList) {
+            if (n.title.contains("Test")) {
+                System.out.println("Starting tests.....");
+                nv.pinNoteToTopTest(n);
+                assertTrue(n.isPinned());
+                nv.pinNoteToTopTest(n);
+                assertFalse(n.isPinned());
+            }
+        }
+    }
+
+
+    @Test
+    void shareNote() {
+        NoteView nv= new NoteView();
+        NoteShare share = NoteShare.getInstance();
+
+        List<Note> noteList= nv.getNotes();
+        for (Note n : noteList) {
+            if (n.title.contains("Test")) {
+                System.out.println("Starting tests..");
+                assertEquals(share.shareByEmail("tereza.bencic@gmail.com", null), share.MISSING_DATA);
+                assertEquals(share.shareByEmail("", n), share.MISSING_DATA);
+                assertEquals(share.shareByEmail("tereza.bencic@gmail.com", n), share.STAUTS_SUCESS);
+
+            }
+        }
+
+    }
 }

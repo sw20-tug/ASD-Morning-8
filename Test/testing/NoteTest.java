@@ -32,10 +32,15 @@ public class NoteTest {
         n.tags=list;
         return n;
     }
-@Test
+
+    @Test
     void checkNote(){
         Note n = updateExistingNote();
         assertEquals(2,n.tags.size());
         assertEquals("tag1",n.tags.get(0));
-}
+    }
+
+
+
+
 }
